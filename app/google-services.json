@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "614255774603",
+    "project_id": "cookmeapp-e4b86",
+    "storage_bucket": "cookmeapp-e4b86.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:614255774603:android:ab6e312a35d491994bfd8e",
+        "android_client_info": {
+          "package_name": "com.my.cookme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "614255774603-k13h2cj13878rnninrlphl0nurodt05b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3eT2ArlOXLhnrQfsbZaGS9Yhgzrl8kr0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "614255774603-k13h2cj13878rnninrlphl0nurodt05b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
