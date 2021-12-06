@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CookMeApp">
         <activity
+            android:name=".choose_for_recipe"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -18,8 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity"/>
-        <activity android:name=".DashboardActivity"/>
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".DashboardActivity" />
     </application>
 
 </manifest>

@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">CookMeApp</string>
+    <string name="choose_ingredients">בחירת מרכיבים למתכון</string>
+    <string name="fruits_vegetables_choose">פירות וירקות</string>
+    <string name="meat_choose">בשר</string>
+    <string name="dairy_products_choose">מוצרי חלב</string>
+    <string name="cereals_legumes_choose">דגנים וקטניות</string>
+    <string name="spices_choose">תבלינים</string>
+    <string name="fish_choose">דגים</string>
 </resources>
