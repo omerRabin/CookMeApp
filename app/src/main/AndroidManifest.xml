@@ -13,6 +13,9 @@
             android:name=".UploadRecipeActivity"
             android:exported="true" />
         <activity
+            android:name=".choose_for_recipe"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true" >
             <intent-filter>
