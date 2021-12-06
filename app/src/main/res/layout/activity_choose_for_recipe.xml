@@ -91,4 +91,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.304" />
+
+    <AutoCompleteTextView
+        android:id="@+id/suggestion_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="הקלד את המרכיבים"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:completionThreshold="1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Spinner
+
+        android:id="@+id/spinner"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/suggestion_box"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/suggestion_box"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499">
+    </Spinner>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
