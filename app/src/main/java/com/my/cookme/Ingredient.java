@@ -3,16 +3,10 @@ package com.my.cookme;
 
 public class Ingredient {
     private String name;
-    private float amount;
-    private String unitsOfMeasurement;
-    private String category;
     private String description;
 
-    public Ingredient(String name, float amount, String unitsOfMeasurement, String category, String description) {
+    public Ingredient(String name, String description) {
         this.name = name;
-        this.amount = amount;
-        this.unitsOfMeasurement = unitsOfMeasurement;
-        this.category = category;
         this.description = description;
     }
 
@@ -24,27 +18,12 @@ public class Ingredient {
         this.name = name;
     }
 
-    public float getAmount() {
-        return amount;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAmount(float amount) {
-        this.amount = amount;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getUnitsOfMeasurement() {
-        return unitsOfMeasurement;
-    }
-
-    public void setUnitsOfMeasurement(String unitsOfMeasurement) {
-        this.unitsOfMeasurement = unitsOfMeasurement;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 }

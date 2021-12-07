@@ -11,22 +11,20 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class UploadRecipeActivity extends AppCompatActivity {
 
-    EditText etName;
-    EditText etIng;
-    EditText etDescription;
-    Button btnInsertData;
-    Button btnAddIngredient;
-    LinearLayout ll;
+    private EditText editTextName;
+    private EditText editTextDescription;
+    private EditText editTextIngredients;
+    private EditText editTextPreparationMethod;
+    private Button buttonInsertData;
 
     DatabaseReference recipeDBRef;
 
@@ -35,58 +33,46 @@ public class UploadRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_recipe);
 
-        etName = findViewById(R.id.editTextRecipeName);
-        //etIng = findViewById(R.id.editTextIng);
-        etDescription = findViewById(R.id.editTextDescription);
-        btnInsertData = findViewById(R.id.buttonInsertData);
-        btnAddIngredient = findViewById(R.id.addIngBtn);
-        ll = (LinearLayout) findViewById(R.id.ingredientsLayouts);
-
         recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
 
-        btnInsertData.setOnClickListener(new View.OnClickListener() {
+        this.editTextName = findViewById(R.id.editTextRecipeName);
+        this.editTextDescription = findViewById(R.id.editTextDescription);
+        this.editTextIngredients = findViewById(R.id.editTextIngredients);
+        this.editTextPreparationMethod = findViewById(R.id.editTextPreparationMethod);
+        this.buttonInsertData = findViewById(R.id.buttonInsertData);
+
+        this.buttonInsertData.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 insertRecipeData();
-            }
-        });
-
-        btnAddIngredient.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LinearLayout linearLayout = new LinearLayout(UploadRecipeActivity.this);
-                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-                EditText amount = new EditText(UploadRecipeActivity.this);
-                amount.setText("");
-                amount.setHint("Amount");
-
-                EditText ingredient = new EditText(UploadRecipeActivity.this);
-                ingredient.setText("");
-                ingredient.setHint("Ingredient");
-
-                EditText description = new EditText(UploadRecipeActivity.this);
-                description.setText("");
-                description.setHint("Description");
-
-                linearLayout.addView(amount);
-                linearLayout.addView(ingredient);
-                linearLayout.addView(description);
-                ll.addView(linearLayout);
-                linearLayout.invalidate();
-                ll.invalidate();
             }
         });
     }
 
     private void insertRecipeData() {
-        String name = etName.getText().toString();
-        String ings = etIng.getText().toString();
-        String description = etDescription.getText().toString();
+        String[] ingredients_db = {"Egg", "Apple", "Milk", "Oil", "Garlic", "Nut", "Lemon", "Butter", "Sugar", "Juice", "Corn", "Cheese", "Flour", "Yeast", "Salt", "Water", "Margarine"};
+        String recipeName = this.editTextName.getText().toString();
+        String description = this.editTextDescription.getText().toString();
+        String ingredients = this.editTextIngredients.getText().toString();
+        String preparationMethod = this.editTextPreparationMethod.getText().toString();
+        String[] lines = ingredients.split("\n");
         List<Ingredient> ingredientList = new ArrayList<>();
-        ingredientList.add(new Ingredient("Banana", 2, "units", "fruits", null));
 
-        Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(), name, ingredientList, description);
+        for (String line :
+                lines) {
+            for (String ing :
+                    ingredients_db) {
+                if (line.toLowerCase().contains(ing.toLowerCase())) {
+                    ingredientList.add(new Ingredient(ing, line));
+                }
+            }
+        }
+
+        Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                recipeName, ingredientList, description, preparationMethod);
+
         recipeDBRef.push().setValue(recipe);
-        Toast.makeText(UploadRecipeActivity.this, "Data inserted", Toast.LENGTH_SHORT).show();
+
+
     }
 }

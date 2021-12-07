@@ -13,16 +13,17 @@ public class Recipe {
     private String uploadDate;
     private List<Ingredient> ingredients;
     private String description;
+    private String preparationMethod;
 
-    public Recipe(String ownerID, String name, List<Ingredient> ingredients, String description) {
+    public Recipe(String ownerID, String name, List<Ingredient> ingredients, String description, String preparationMethod) {
         this.ownerID = ownerID;
         this.name = name;
-        //this.recipeID = "123456798";
-        this.likesNumber = 0;
-        Date date = new Date();
-        this.uploadDate = formatter.format(date);
         this.ingredients = ingredients;
         this.description = description;
+        this.preparationMethod = preparationMethod;
+        Date date = new Date();
+        this.uploadDate = formatter.format(date);
+        this.likesNumber = 0;
     }
 
     public static SimpleDateFormat getFormatter() {
@@ -79,5 +80,13 @@ public class Recipe {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPreparationMethod() {
+        return preparationMethod;
+    }
+
+    public void setPreparationMethod(String preparationMethod) {
+        this.preparationMethod = preparationMethod;
     }
 }
