@@ -6,21 +6,23 @@ import java.util.List;
 
 public class Recipe {
     private static SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-    private String recipeID;
+    //private String recipeID;
     private String ownerID;
     private String name;
     private int likesNumber;
     private String uploadDate;
     private List<Ingredient> ingredients;
+    private String description;
 
-    public Recipe(String ownerID, String name, List<Ingredient> ingredients) {
+    public Recipe(String ownerID, String name, List<Ingredient> ingredients, String description) {
         this.ownerID = ownerID;
         this.name = name;
-        this.recipeID = "123456798";
+        //this.recipeID = "123456798";
         this.likesNumber = 0;
         Date date = new Date();
         this.uploadDate = formatter.format(date);
         this.ingredients = ingredients;
+        this.description = description;
     }
 
     public static SimpleDateFormat getFormatter() {
@@ -29,14 +31,6 @@ public class Recipe {
 
     public static void setFormatter(SimpleDateFormat formatter) {
         Recipe.formatter = formatter;
-    }
-
-    public String getRecipeID() {
-        return recipeID;
-    }
-
-    public void setRecipeID(String recipeID) {
-        this.recipeID = recipeID;
     }
 
     public String getOwnerID() {
@@ -77,5 +71,13 @@ public class Recipe {
 
     public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
