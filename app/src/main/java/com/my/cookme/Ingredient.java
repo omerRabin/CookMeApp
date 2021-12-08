@@ -4,10 +4,13 @@ package com.my.cookme;
 public class Ingredient {
     private String name;
     private String description;
+    private String category;
 
-    public Ingredient(String name, String description) {
+
+    public Ingredient(String name, String description, String category) {
         this.name = name;
         this.description = description;
+        this.category = category;
     }
 
     public String getName() {
@@ -26,4 +29,11 @@ public class Ingredient {
         this.description = description;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }

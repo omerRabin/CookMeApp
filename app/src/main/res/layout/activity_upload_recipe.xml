@@ -1,80 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".UploadRecipeActivity">
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="Upload"
-        android:textSize="50sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/editTextRecipeName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:hint="Recipe Name"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-
-    <Button
-        android:id="@+id/buttonInsertData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Insert Data"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/editTextDescription"
+        android:layout_height="match_parent" >
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:ems="10"
-        android:hint="description"
-        android:minHeight="48dp"
-        android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextRecipeName" />
+        android:layout_height="match_parent"
+        tools:context=".UploadRecipeActivity">
 
-    <EditText
-        android:id="@+id/editTextIngredients"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="ing"
-        android:minHeight="48dp"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="@+id/editTextDescription"
-        app:layout_constraintStart_toStartOf="@+id/editTextDescription"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="Upload"
+            android:textSize="50sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextPreparationMethod"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Preparation Method"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="@+id/editTextIngredients"
-        app:layout_constraintStart_toStartOf="@+id/editTextIngredients"
-        app:layout_constraintTop_toBottomOf="@+id/editTextIngredients" />
+        <EditText
+            android:id="@+id/editTextRecipeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:ems="10"
+            android:hint="Recipe Name"
+            android:drawablePadding="12dp"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            android:text=""
+            android:drawableStart="@drawable/ic_food_bank"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/buttonInsertData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="Insert Data"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPreparationMethod" />
+
+        <EditText
+            android:id="@+id/editTextDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/rectangular_field"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:hint="Tell us about your recipe!"
+            android:inputType="textMultiLine"
+            android:paddingVertical="15dp"
+            android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextRecipeName" />
+
+        <EditText
+            android:id="@+id/editTextIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/rectangular_field"
+            android:hint="What do I need?"
+            android:paddingLeft="10dp"
+            android:inputType="textMultiLine"
+            android:paddingVertical="15dp"
+            android:paddingRight="10dp"
+            android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="@+id/editTextDescription"
+            app:layout_constraintStart_toStartOf="@+id/editTextDescription"
+            app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
+
+        <EditText
+            android:id="@+id/editTextPreparationMethod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/rectangular_field"
+            android:hint="How to cook?"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:inputType="textMultiLine"
+            android:paddingVertical="15dp"
+            android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="@+id/editTextIngredients"
+            app:layout_constraintStart_toStartOf="@+id/editTextIngredients"
+            app:layout_constraintTop_toBottomOf="@+id/editTextIngredients" />
+
+
+        <Button
+            android:id="@+id/buttonGoAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Ingrediente"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
