@@ -19,102 +19,25 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.022" />
 
-    <Button
-        android:id="@+id/fruits_vegetables"
-        android:layout_width="93dp"
-        android:layout_height="64dp"
-        android:onClick="show_vegetables_fruits"
-        android:text="@string/fruits_vegetables_choose"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.861"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.082" />
-
-    <Button
-        android:id="@+id/meat"
-        android:layout_width="95dp"
-        android:layout_height="64dp"
-        android:text="@string/meat_choose"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.867"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.193" />
-
-    <Button
-        android:id="@+id/dairy_products"
-        android:layout_width="92dp"
-        android:layout_height="67dp"
-        android:text="@string/dairy_products_choose"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.86"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.307" />
-
-    <Button
-        android:id="@+id/spices"
-        android:layout_width="103dp"
-        android:layout_height="64dp"
-        android:text="@string/spices_choose"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.233"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.082" />
-
-    <Button
-        android:id="@+id/cereals_legums"
-        android:layout_width="105dp"
-        android:layout_height="62dp"
-        android:text="@string/cereals_legumes_choose"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.222"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.194" />
-
-    <Button
-        android:id="@+id/fish"
-        android:layout_width="103dp"
-        android:layout_height="65dp"
-        android:text="@string/fish_choose"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.219"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.304" />
-
-    <AutoCompleteTextView
-        android:id="@+id/suggestion_box"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="הקלד את המרכיבים"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:completionThreshold="1"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
     <Spinner
-
-        android:id="@+id/spinner"
+        android:id="@+id/mySpinner"
         android:layout_width="409dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/suggestion_box"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/suggestion_box"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499">
-    </Spinner>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/choose_ingredients"
+        app:layout_constraintVertical_bias="0.108" />
+
+    <ListView
+        android:id="@+id/myListView"
+        android:layout_width="219dp"
+        android:layout_height="551dp"
+        android:layout_below="@+id/mySpinner"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
