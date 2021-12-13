@@ -47,6 +47,7 @@ public class UploadIngredientActivity extends AppCompatActivity {
             }
         });
 
+
         showNeededUpdates();
     }
 
