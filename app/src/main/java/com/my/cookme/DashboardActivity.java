@@ -28,6 +28,7 @@ import java.io.File;
 public class DashboardActivity extends Activity {
     private TextView logout;
     private Button upload;
+    private Button choose;
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -35,7 +36,7 @@ public class DashboardActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
-        logout=findViewById(R.id.LogOutTv);
+        logout = findViewById(R.id.LogOutTv);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,6 +52,15 @@ public class DashboardActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DashboardActivity.this, UploadRecipeActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        choose.findViewById(R.id.CookMeID);
+        choose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DashboardActivity.this, choose_for_recipe.class);
                 startActivity(intent);
                 finish();
             }
