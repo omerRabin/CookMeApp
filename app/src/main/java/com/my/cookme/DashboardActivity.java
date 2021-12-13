@@ -29,6 +29,7 @@ public class DashboardActivity extends Activity {
     private TextView logout;
     private Button upload;
     private Button choose;
+    private Button cookme;
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -56,15 +57,17 @@ public class DashboardActivity extends Activity {
                 finish();
             }
         });
-        choose.findViewById(R.id.CookMeID);
-        choose.setOnClickListener(new View.OnClickListener() {
+
+        cookme = findViewById(R.id.CookMeID);
+        cookme.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(DashboardActivity.this, choose_for_recipe.class);
                 startActivity(intent);
                 finish();
             }
         });
+
 
     }
 }
