@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,7 +26,7 @@ import java.io.File;
 
 
 public class DashboardActivity extends Activity {
-    private Button logout;
+    private TextView logout;
     private Button upload;
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -34,7 +35,7 @@ public class DashboardActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
-        logout=findViewById(R.id.logout);
+        logout=findViewById(R.id.LogOutTv);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,7 +46,7 @@ public class DashboardActivity extends Activity {
             }
         });
 
-        upload = findViewById(R.id.uploadBtn);
+        upload = findViewById(R.id.AddRecipeID);
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

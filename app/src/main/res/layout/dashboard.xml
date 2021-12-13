@@ -1,28 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#0445D1"
-        android:text="This is My Dashboard"
-        android:textSize="20dp"/>
-    <Button
-        android:id="@+id/logout"
-        android:layout_width="200dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="60dp"
-        android:text="Logout"
-        android:textSize="20dp"
-        android:textAllCaps="false"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@drawable/spices_bg"
+android:orientation="vertical"
+android:gravity="center">
 
-    <Button
-        android:id="@+id/uploadBtn"
-        android:layout_width="200dp"
-        android:layout_height="60dp"
-        android:text="Upload a recipe!" />
+<Button
+    android:id="@+id/UserID"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginTop="11dp"
+    android:layout_marginEnd="331dp"
+    android:layout_marginRight="331dp"
+    android:layout_marginBottom="675dp"
+    android:background="@drawable/user"
+    android:textAllCaps="false"
+    android:textSize="20dp" />
 
-</LinearLayout>
+<Button
+    android:id="@+id/CookMeID"
+    android:layout_width="wrap_content"
+    android:layout_height="121dp"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginStart="132dp"
+    android:layout_marginTop="98dp"
+    android:layout_marginEnd="132dp"
+    android:layout_marginRight="132dp"
+    android:layout_marginBottom="512dp"
+    android:background="@drawable/round_button"
+    android:text="CookMe"
+    android:textAllCaps="false"
+    android:textSize="20dp" />
+
+<Button
+    android:id="@+id/AddRecipeID"
+    android:layout_width="257dp"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginStart="78dp"
+    android:layout_marginTop="263dp"
+    android:layout_marginEnd="76dp"
+    android:layout_marginRight="76dp"
+    android:layout_marginBottom="388dp"
+    android:background="@drawable/rectangle_button"
+    android:text="Add Recipe"
+    android:textAllCaps="false"
+    android:textSize="20dp" />
+
+<TextView
+    android:id="@+id/LogOutTv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginStart="314dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginEnd="13dp"
+    android:layout_marginBottom="693dp"
+    android:text="Log Out"
+    android:textColor="#ffffff"
+    android:textSize="20dp"
+    android:textStyle="bold" />
+
+</RelativeLayout>
+
