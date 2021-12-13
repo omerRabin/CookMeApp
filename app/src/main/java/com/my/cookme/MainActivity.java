@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView SignUpTv;
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
-    private Button pass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +36,7 @@ public class MainActivity extends AppCompatActivity {
         SignInButton=findViewById(R.id.login);
         progressDialog=new ProgressDialog(this);
         SignUpTv=findViewById(R.id.signUpTv);
-        pass = (Button) findViewById(R.id.button);
-        pass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openActivity2();
-            }
-        });
+
         SignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,10 +53,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void openActivity2() {
-        Intent intent = new Intent(MainActivity.this, choose_for_recipe.class);
-        startActivity(intent);
-    }
+
 
     private void Login(){
         String email=emailEt.getText().toString();
