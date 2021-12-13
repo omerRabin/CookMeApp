@@ -27,19 +27,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class choose_for_recipe extends AppCompatActivity {
-
+    ArrayList<CosmicBody> data = new ArrayList<>();
     ListView myListView;
     Spinner mySpinner;
     ArrayAdapter<CosmicBody> adapter;
     String[] categories = {"Vegetables&Fruits","Meat","Dairy Products", "Spices", "Cereals and Legums","Fish" };
-    ArrayList<CosmicBody> data = new ArrayList<>();
 
 
     private void initializeViews() {
         mySpinner = findViewById(R.id.mySpinner);
         mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,categories));
         myListView = findViewById(R.id.myListView);
-        myListView.setAdapter(new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1,getCosmicBodies()));
+        ArrayAdapter<CosmicBody> a = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1,getCosmicBodies());
+        int size = a.getCount();
+        myListView.setAdapter(a);
 
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -63,7 +64,7 @@ public class choose_for_recipe extends AppCompatActivity {
 
     private ArrayList<CosmicBody> getCosmicBodies() {
         Log.d("TAG", "Before attaching the listener!");
-        data.clear(); // here i need to put the all ingredients from data that i need to pull from fire base
+        //data.clear(); // here i need to put the all ingredients from data that i need to pull from fire base
         //data.add(new CosmicBody("Dairy Products", 1));
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Ingredients");
         reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -98,6 +99,8 @@ public class choose_for_recipe extends AppCompatActivity {
                         String name = l1_convert.get(i).get("name");
                         String category = l1_convert.get(i).get("category");
                         data.add(new CosmicBody(name,category));
+                        Toast.makeText(choose_for_recipe.this, "omer", Toast.LENGTH_SHORT).show();
+
                     }
                 }
             }
