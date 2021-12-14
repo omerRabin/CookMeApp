@@ -32,4 +32,5 @@
         <activity android:name=".DashboardActivity" />
     </application>
 
+
 </manifest>

@@ -47,6 +47,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
 
     DatabaseReference recipeDBRef;
     DatabaseReference ingredientDBRef;
+    DatabaseReference needToUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
 
         recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
         ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
+        needToUpdate = FirebaseDatabase.getInstance().getReference().child("Update");
 
         this.editTextName = findViewById(R.id.editTextRecipeName);
         this.editTextDescription = findViewById(R.id.editTextDescription);
@@ -122,8 +124,10 @@ public class UploadRecipeActivity extends AppCompatActivity {
                     flag = true;
                 }
             }
-            if (flag == false)
+            if (flag == false) {
                 missingIngredients.add(line);
+                ingredientList.add(new Ingredient(line, line, "Unknown"));
+            }
         }
 
         if (missingIngredients.size() > 0)
@@ -160,14 +164,16 @@ public class UploadRecipeActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(UploadRecipeActivity.this, "A request to update our database has been sent to one of our admins", Toast.LENGTH_LONG).show();
-                sendEmail(content);
+                sendUpdate(missingIngredients);
                 //relativeLayoutPopup.setVisibility(View.VISIBLE);
             }
         });
         builder.show();
     }
 
-    private void sendEmail(String content) {
+    private void sendUpdate(List<String> missingIngredients) {
         //need to send an email or a msg or something to an admin
+        for (String s : missingIngredients)
+            needToUpdate.push().setValue(s);
     }
 }
