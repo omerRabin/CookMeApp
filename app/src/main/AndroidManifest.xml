@@ -11,6 +11,7 @@
         android:theme="@style/Theme.CookMeApp">
         <activity
             android:name=".UploadIngredientActivity"
+            android:parentActivityName=".UploadRecipeActivity"
             android:exported="true" />
         <activity
             android:name=".UploadRecipeActivity"
@@ -30,5 +31,6 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".DashboardActivity" />
     </application>
+
 
 </manifest>

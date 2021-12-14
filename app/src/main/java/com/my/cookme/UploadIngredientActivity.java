@@ -20,11 +20,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 
 public class UploadIngredientActivity extends AppCompatActivity {
-    
+
     private EditText editTextName;
     private EditText editTextCategory;
     private Button buttonAdd;
     private TextView textViewShowUpdates;
+    private Button buttonDelete;
 
     private DatabaseReference updateDBRef;
     private DatabaseReference ingredientDBRef;
@@ -33,13 +34,16 @@ public class UploadIngredientActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_ingredient);
-        
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.editTextName = findViewById(R.id.editTextIngredientName);
         this.editTextCategory = findViewById(R.id.editTextCategory);
         this.updateDBRef = FirebaseDatabase.getInstance().getReference().child("Update");
         this.ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
         this.buttonAdd = findViewById(R.id.ButtonAddIngredient);
-        
+        this.buttonDelete = findViewById(R.id.buttondelete);
+        this.textViewShowUpdates = findViewById(R.id.showIngredientsTxt);
+
         this.buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,8 +51,25 @@ public class UploadIngredientActivity extends AppCompatActivity {
             }
         });
 
+        this.buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textViewShowUpdates.setText("");
+                deleteUpdates();
+            }
+        });
+
 
         showNeededUpdates();
+    }
+
+    private void deleteUpdates() {
+        updateDBRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(UploadIngredientActivity.this, "idk", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void insertIngredientData() {
@@ -60,7 +81,7 @@ public class UploadIngredientActivity extends AppCompatActivity {
     }
 
     private void showNeededUpdates() {
-        this.textViewShowUpdates = findViewById(R.id.showIngredientsTxt);
+
         updateDBRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
