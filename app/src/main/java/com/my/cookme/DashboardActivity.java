@@ -28,7 +28,6 @@ import java.io.File;
 public class DashboardActivity extends Activity {
     private TextView logout;
     private Button upload;
-    private Button choose;
     private Button cookme;
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -37,6 +36,7 @@ public class DashboardActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
+
         logout = findViewById(R.id.LogOutTv);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
