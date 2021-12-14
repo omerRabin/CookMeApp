@@ -27,13 +27,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class choose_for_recipe extends AppCompatActivity {
+    static int one_time=0;
     ArrayList<CosmicBody> data = new ArrayList<>();
     ListView myListView;
     Spinner mySpinner;
     ArrayAdapter<CosmicBody> adapter;
-    String[] categories = {"Vegetables&Fruits","Meat","Dairy Products", "Spices", "Cereals and Legums","Fish" };
-
-
+    String[] categories = {"Cetgories","Vegtables&Fruits","Meat","Dairy Products", "Spices", "Cereals and Legums","Fish" };
     private void initializeViews() {
         mySpinner = findViewById(R.id.mySpinner);
         mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,categories));
@@ -41,20 +40,20 @@ public class choose_for_recipe extends AppCompatActivity {
         ArrayAdapter<CosmicBody> a = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1,getCosmicBodies());
         int size = a.getCount();
         myListView.setAdapter(a);
-
+        data.clear();
         mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position != 0) {
-                    if (position >= 0 && position < categories.length) { // here i will create and insert into a list of ingredients
-                        Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
-                        getSelectedCategoryData(position);
-                        Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(choose_for_recipe.this, "selected category doesnt exist!", Toast.LENGTH_SHORT).show();
-                    }
+
+                if (position > 0 && position < categories.length) { // here i will create and insert into a list of ingredients
+                    Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
+                    getSelectedCategoryData(position);
+                    Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(choose_for_recipe.this, "selected category doesnt exist!", Toast.LENGTH_SHORT).show();
                 }
-            }
+                }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -63,53 +62,69 @@ public class choose_for_recipe extends AppCompatActivity {
     }
 
     private ArrayList<CosmicBody> getCosmicBodies() {
-        Log.d("TAG", "Before attaching the listener!");
-        //data.clear(); // here i need to put the all ingredients from data that i need to pull from fire base
-        //data.add(new CosmicBody("Dairy Products", 1));
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Ingredients");
-        reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                    Toast.makeText( choose_for_recipe.this, "tzumi", Toast.LENGTH_SHORT).show();
+        if(one_time==0) {
+            Log.d("TAG", "Before attaching the listener!");
+            //data.clear(); // here i need to put the all ingredients from data that i need to pull from fire base
+            //data.add(new CosmicBody("Dairy Products", 1));
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Ingredients");
+            reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (!task.isSuccessful()) {
+                        Log.e("firebase", "Error getting data", task.getException());
+                        Toast.makeText(choose_for_recipe.this, "tzumi", Toast.LENGTH_SHORT).show();
 
+                    } else {
+
+                        Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                        Toast.makeText(choose_for_recipe.this, "yoel", Toast.LENGTH_SHORT).show();
+                        HashMap<String, Object> o = (HashMap<String, Object>) (task.getResult().getValue());
+                        Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                        Object first = o.get("-MqQpbvASutrrPdMWgCr");
+                        Log.d("firebase", String.valueOf(task.getResult().getValue()));
+                        HashMap<String, String> second = (HashMap<String, String>) (first);
+                        Log.d("firebase", String.valueOf(task.getResult().getValue()));
+
+                        ArrayList<Object> l1 = new ArrayList<>();
+                        for (Object obj : o.values()) {
+                            l1.add(obj);
+                        }
+                        ArrayList<HashMap<String, String>> l1_convert = new ArrayList<>();
+                        for (Object x : l1) {
+                            l1_convert.add((HashMap<String, String>) x);
+                        }
+
+                        HashMap<String, Boolean> h = new HashMap<>();
+
+                        for (int i = 0; i < l1_convert.size(); i++) {
+                            String name = l1_convert.get(i).get("name");
+                            String category = l1_convert.get(i).get("category");
+
+                            // if(h.get(name) == null){
+                            //  h.put(name,true);
+                            //}
+
+                            //else if(h.get(name)){
+                            //     continue;
+                            //}
+                            data.add(new CosmicBody(name, category));
+                            Toast.makeText(choose_for_recipe.this, "omer", Toast.LENGTH_SHORT).show();
+                            String x = "index is " + i;
+                            Toast.makeText(choose_for_recipe.this, x, Toast.LENGTH_SHORT).show();
+
+
+                        }
+
+                    }
                 }
-                else {
-
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    Toast.makeText(choose_for_recipe.this, "yoel", Toast.LENGTH_SHORT).show();
-                    HashMap<String,Object> o = (HashMap<String,Object>)(task.getResult().getValue());
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    Object first = o.get("-MqQpbvASutrrPdMWgCr");
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    HashMap<String,String> second = (HashMap<String,String>)(first);
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-
-                    ArrayList<Object> l1 = new ArrayList<>();
-                    for (Object obj:o.values()) {
-                        l1.add(obj);
-                    }
-                    ArrayList<HashMap<String, String>> l1_convert = new ArrayList<>();
-                    for (Object x:l1) {
-                        l1_convert.add((HashMap<String,String>)x);
-                    }
-
-                    for(int i=0; i <l1_convert.size();i++){
-                        String name = l1_convert.get(i).get("name");
-                        String category = l1_convert.get(i).get("category");
-                        data.add(new CosmicBody(name,category));
-                        Toast.makeText(choose_for_recipe.this, "omer", Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-            }
-        });
-
+            });
+        }
+        one_time++;
         return data;
     }
     private void getSelectedCategoryData(int categoryID) {
         ArrayList<CosmicBody> cosmicBodies = new ArrayList<>();
+        cosmicBodies.clear();
         if(categoryID ==0)
         {
             adapter = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1, getCosmicBodies());
@@ -118,12 +133,15 @@ public class choose_for_recipe extends AppCompatActivity {
         {
             for(CosmicBody cosmicBody : getCosmicBodies()) {
                 if(cosmicBody.getCategoryID() == categoryID) {
+                    Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
                     cosmicBodies.add(cosmicBody);
                 }
             }
+
             adapter = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1,cosmicBodies);
         }
         myListView.setAdapter(adapter);
+
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

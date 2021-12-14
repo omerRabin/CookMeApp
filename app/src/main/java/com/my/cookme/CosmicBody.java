@@ -14,7 +14,7 @@ public class CosmicBody {
 
     public CosmicBody(String name, String category) {
         this.name = name;
-        if(category.equals("Vegetables&Fruits"))
+        if(category.equals("Vegtables&Fruits"))
         {
             this.categoryID = 1;
         }
