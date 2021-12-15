@@ -1,17 +1,29 @@
 package com.my.cookme;
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -28,16 +40,21 @@ import java.util.HashMap;
 
 public class choose_for_recipe extends AppCompatActivity {
     static int one_time=0;
+    static int choose_state=-1;
     ArrayList<CosmicBody> data = new ArrayList<>();
     ListView myListView;
     Spinner mySpinner;
+    ImageButton cart;
+    Button choose;
+    Button remove;
     ArrayAdapter<CosmicBody> adapter;
+    static ArrayList<String> cart_list = new ArrayList<>();
     String[] categories = {"Cetgories","Vegtables&Fruits","Meat","Dairy Products", "Spices", "Cereals and Legums","Fish" };
     private void initializeViews() {
         mySpinner = findViewById(R.id.mySpinner);
         mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,categories));
         myListView = findViewById(R.id.myListView);
-        ArrayAdapter<CosmicBody> a = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1,getCosmicBodies());
+        ArrayAdapter<CosmicBody> a = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_multiple_choice,getCosmicBodies());
         int size = a.getCount();
         myListView.setAdapter(a);
         data.clear();
@@ -62,18 +79,66 @@ public class choose_for_recipe extends AppCompatActivity {
         myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(choose_state==1) { // add to cart
+                    CosmicBody x = (CosmicBody) parent.getItemAtPosition(position);
+                    if(!cart_list.contains(x.getName())) {
+                        cart_list.add(x.getName());
+                        Toast.makeText(choose_for_recipe.this, "add to cart", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        Toast.makeText(choose_for_recipe.this, "ingredient was already selected", Toast.LENGTH_SHORT).show();
+                    }
 
-                    Toast.makeText(choose_for_recipe.this, "itamar", Toast.LENGTH_SHORT).show();
+                }
+                else if(choose_state ==0){ // remove from cart
+                    Toast.makeText(choose_for_recipe.this, "remove from cart", Toast.LENGTH_SHORT).show();
+                    CosmicBody y = (CosmicBody) parent.getItemAtPosition(position);
+                    String val = y.getName();
+                    cart_list.remove(val);
+                }
             }
         });
 
+        choose = findViewById(R.id.add_button);
+        choose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choose_state =1;
+            }
+        });
+
+        remove = findViewById(R.id.remove_button);
+        remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choose_state =0;
+            }
+        });
+
+        cart=findViewById(R.id.cart);
+        cart.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(choose_for_recipe.this);
+                builder.setCancelable(true);
+                String pop_up_content = "Selected Ingredients :" + String.join(", ", choose_for_recipe.cart_list);
+                builder.setTitle("Your Cart");
+                builder.setMessage(pop_up_content);
+                builder.setNegativeButton("exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.show();
+            }
+        });
     }
 
     private ArrayList<CosmicBody> getCosmicBodies() {
         if(one_time==0) {
             Log.d("TAG", "Before attaching the listener!");
-            //data.clear(); // here i need to put the all ingredients from data that i need to pull from fire base
-            //data.add(new CosmicBody("Dairy Products", 1));
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Ingredients");
             reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                 @Override

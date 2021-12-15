@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/ingredients"
     tools:context=".choose_for_recipe">
 
     <TextView
@@ -31,14 +33,54 @@
 
     <ListView
         android:id="@+id/myListView"
-        android:layout_width="219dp"
-        android:layout_height="551dp"
+        android:layout_width="179dp"
+        android:layout_height="361dp"
         android:layout_below="@+id/mySpinner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.534"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mySpinner"
-        app:layout_constraintVertical_bias="0.633" />
+        app:layout_constraintVertical_bias="0.152" />
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="95dp"
+        android:layout_height="122dp"
+        android:text="@string/add_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.037"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.251" />
+
+    <Button
+        android:id="@+id/remove_button"
+        android:layout_width="96dp"
+        android:layout_height="117dp"
+        android:text="@string/remove_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.038"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.447" />
+
+    <ImageButton
+        android:id="@+id/cart"
+        android:layout_width="113dp"
+        android:layout_height="113dp"
+        android:scrollbarDefaultDelayBeforeFade="1"
+        android:scrollbarFadeDuration="3"
+        android:scrollbarSize="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.947"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.974"
+        app:srcCompat="@drawable/cart" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
