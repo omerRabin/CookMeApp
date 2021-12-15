@@ -10,15 +10,33 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CookMeApp">
         <activity
-            android:name=".UploadIngredientActivity"
-            android:parentActivityName=".UploadRecipeActivity"
+            android:name=".SensitivityActivity"
+            android:parentActivityName=".PersonalAreaActivity"
             android:exported="true" />
+        <activity
+            android:name=".PersonalAreaActivity"
+            android:parentActivityName=".DashboardActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MyRecipesActivity"
+            android:parentActivityName=".PersonalAreaActivity"
+            android:exported="true" />
+        <activity
+            android:name=".FavoriteRecipesActivity"
+            android:parentActivityName=".PersonalAreaActivity"
+            android:exported="true" />
+        <activity
+            android:name=".UploadIngredientActivity"
+            android:exported="true"
+            android:parentActivityName=".UploadRecipeActivity" />
         <activity
             android:name=".UploadRecipeActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:parentActivityName=".DashboardActivity" />
         <activity
             android:name=".choose_for_recipe"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".DashboardActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -28,9 +46,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity" />
+        <activity
+            android:name=".SignUpActivity"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".DashboardActivity" />
     </application>
-
 
 </manifest>

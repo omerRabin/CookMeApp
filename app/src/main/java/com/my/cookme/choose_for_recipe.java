@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class choose_for_recipe extends AppCompatActivity {
-    static int one_time=0;
-    static int choose_state=-1;
+    static int one_time = 0;
+    static int choose_state = -1;
     ArrayList<CosmicBody> data = new ArrayList<>();
     ListView myListView;
     Spinner mySpinner;
@@ -49,12 +49,14 @@ public class choose_for_recipe extends AppCompatActivity {
     Button remove;
     ArrayAdapter<CosmicBody> adapter;
     static ArrayList<String> cart_list = new ArrayList<>();
-    String[] categories = {"Cetgories","Vegtables&Fruits","Meat","Dairy Products", "Spices", "Cereals and Legums","Fish" };
+    String[] categories = {"Cetgories", "Vegtables&Fruits", "Meat", "Dairy Products", "Spices", "Cereals and Legums", "Fish"};
+
+
     private void initializeViews() {
         mySpinner = findViewById(R.id.mySpinner);
-        mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,categories));
+        mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, categories));
         myListView = findViewById(R.id.myListView);
-        ArrayAdapter<CosmicBody> a = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_multiple_choice,getCosmicBodies());
+        ArrayAdapter<CosmicBody> a = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_multiple_choice, getCosmicBodies());
         int size = a.getCount();
         myListView.setAdapter(a);
         data.clear();
@@ -69,7 +71,7 @@ public class choose_for_recipe extends AppCompatActivity {
                 } else {
                     Toast.makeText(choose_for_recipe.this, "selected category doesnt exist!", Toast.LENGTH_SHORT).show();
                 }
-                }
+            }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -79,18 +81,16 @@ public class choose_for_recipe extends AppCompatActivity {
         myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(choose_state==1) { // add to cart
+                if (choose_state == 1) { // add to cart
                     CosmicBody x = (CosmicBody) parent.getItemAtPosition(position);
-                    if(!cart_list.contains(x.getName())) {
+                    if (!cart_list.contains(x.getName())) {
                         cart_list.add(x.getName());
                         Toast.makeText(choose_for_recipe.this, "add to cart", Toast.LENGTH_SHORT).show();
-                    }
-                    else{
+                    } else {
                         Toast.makeText(choose_for_recipe.this, "ingredient was already selected", Toast.LENGTH_SHORT).show();
                     }
 
-                }
-                else if(choose_state ==0){ // remove from cart
+                } else if (choose_state == 0) { // remove from cart
                     Toast.makeText(choose_for_recipe.this, "remove from cart", Toast.LENGTH_SHORT).show();
                     CosmicBody y = (CosmicBody) parent.getItemAtPosition(position);
                     String val = y.getName();
@@ -103,7 +103,7 @@ public class choose_for_recipe extends AppCompatActivity {
         choose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                choose_state =1;
+                choose_state = 1;
             }
         });
 
@@ -111,11 +111,11 @@ public class choose_for_recipe extends AppCompatActivity {
         remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                choose_state =0;
+                choose_state = 0;
             }
         });
 
-        cart=findViewById(R.id.cart);
+        cart = findViewById(R.id.cart);
         cart.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -137,7 +137,7 @@ public class choose_for_recipe extends AppCompatActivity {
     }
 
     private ArrayList<CosmicBody> getCosmicBodies() {
-        if(one_time==0) {
+        if (one_time == 0) {
             Log.d("TAG", "Before attaching the listener!");
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Ingredients");
             reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -191,31 +191,31 @@ public class choose_for_recipe extends AppCompatActivity {
         one_time++;
         return data;
     }
+
     private void getSelectedCategoryData(int categoryID) {
         ArrayList<CosmicBody> cosmicBodies = new ArrayList<>();
         cosmicBodies.clear();
-        if(categoryID ==0)
-        {
+        if (categoryID == 0) {
             adapter = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1, getCosmicBodies());
-        }
-        else
-        {
-            for(CosmicBody cosmicBody : getCosmicBodies()) {
-                if(cosmicBody.getCategoryID() == categoryID) {
+        } else {
+            for (CosmicBody cosmicBody : getCosmicBodies()) {
+                if (cosmicBody.getCategoryID() == categoryID) {
                     Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
                     cosmicBodies.add(cosmicBody);
                 }
             }
 
-            adapter = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1,cosmicBodies);
+            adapter = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_1, cosmicBodies);
         }
         myListView.setAdapter(adapter);
 
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_for_recipe);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initializeViews();
     }

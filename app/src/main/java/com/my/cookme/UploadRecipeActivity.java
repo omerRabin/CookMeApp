@@ -53,6 +53,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_recipe);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
         ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
@@ -73,7 +74,6 @@ public class UploadRecipeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(UploadRecipeActivity.this, UploadIngredientActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
 
@@ -82,12 +82,10 @@ public class UploadRecipeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ingredients_db.clear();
-                Toast.makeText(UploadRecipeActivity.this, "GOOD", Toast.LENGTH_SHORT).show();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     HashMap<String, String> object = (HashMap<String, String>) dataSnapshot.getValue();
                     Ingredient i = new Ingredient(object.get("name"), null, object.get("category"));
                     ingredients_db.add(i);
-                    Toast.makeText(UploadRecipeActivity.this, i.getName(), Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -119,7 +117,6 @@ public class UploadRecipeActivity extends AppCompatActivity {
         String preparationMethod = this.editTextPreparationMethod.getText().toString();
         String[] lines = ingredients.split("\n");
         List<Ingredient> ingredientList = new ArrayList<>();
-        Toast.makeText(UploadRecipeActivity.this, ingredients_db.size() + "", Toast.LENGTH_SHORT).show();
 
         ArrayList<String> missingIngredients = new ArrayList<>();
 

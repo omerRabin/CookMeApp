@@ -29,6 +29,7 @@ public class DashboardActivity extends Activity {
     private TextView logout;
     private Button upload;
     private Button cookme;
+    private Button personalArea;
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -44,7 +45,6 @@ public class DashboardActivity extends Activity {
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(DashboardActivity.this, MainActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
 
@@ -54,7 +54,6 @@ public class DashboardActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(DashboardActivity.this, UploadRecipeActivity.class);
                 startActivity(intent);
-                //finish();
             }
         });
 
@@ -64,7 +63,15 @@ public class DashboardActivity extends Activity {
             public void onClick(View view) {
                 Intent intent = new Intent(DashboardActivity.this, choose_for_recipe.class);
                 startActivity(intent);
-                finish();
+            }
+        });
+
+        this.personalArea = findViewById(R.id.UserID);
+        this.personalArea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DashboardActivity.this, PersonalAreaActivity.class);
+                startActivity(intent);
             }
         });
 
