@@ -59,6 +59,14 @@ public class choose_for_recipe extends AppCompatActivity {
 
             }
         });
+        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Toast.makeText(choose_for_recipe.this, "itamar", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private ArrayList<CosmicBody> getCosmicBodies() {
@@ -77,7 +85,7 @@ public class choose_for_recipe extends AppCompatActivity {
                     } else {
 
                         Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                        Toast.makeText(choose_for_recipe.this, "yoel", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(choose_for_recipe.this, "yoel", Toast.LENGTH_SHORT).show();
                         HashMap<String, Object> o = (HashMap<String, Object>) (task.getResult().getValue());
                         Log.d("firebase", String.valueOf(task.getResult().getValue()));
                         Object first = o.get("-MqQpbvASutrrPdMWgCr");
@@ -108,11 +116,7 @@ public class choose_for_recipe extends AppCompatActivity {
                             //     continue;
                             //}
                             data.add(new CosmicBody(name, category));
-                            Toast.makeText(choose_for_recipe.this, "omer", Toast.LENGTH_SHORT).show();
-                            String x = "index is " + i;
-                            Toast.makeText(choose_for_recipe.this, x, Toast.LENGTH_SHORT).show();
-
-
+                            //Toast.makeText(choose_for_recipe.this, "omer", Toast.LENGTH_SHORT).show();
                         }
 
                     }
