@@ -54,7 +54,7 @@ public class DashboardActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(DashboardActivity.this, UploadRecipeActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
             }
         });
 

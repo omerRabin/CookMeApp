@@ -65,6 +65,9 @@ public class UploadRecipeActivity extends AppCompatActivity {
         this.buttonInsertData = findViewById(R.id.buttonInsertData);
         this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
 
+        if (!isAdmin())
+            this.buttonAddIngredient.setVisibility(View.GONE);
+
         this.buttonAddIngredient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,6 +104,11 @@ public class UploadRecipeActivity extends AppCompatActivity {
                 insertRecipeData();
             }
         });
+    }
+
+    public static boolean isAdmin() {
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        return user.equals("yoel2810@gmail.com") || user.equals("omerrabin1289@gmail.com") || user.equals("amittzumi@hotmail.com");
     }
 
     private void insertRecipeData() {

@@ -91,6 +91,12 @@ public class UploadIngredientActivity extends AppCompatActivity {
                 else {
                     String content = "";
                     HashMap<String, String> objectHashMap = (HashMap<String, String>) task.getResult().getValue();
+
+                    if (objectHashMap == null) {
+                        textViewShowUpdates.setText("");
+                        return;
+                    }
+
                     for (String obj : objectHashMap.values()) {
                         content += obj + "\n";
                     }
