@@ -27,13 +27,13 @@ import java.util.HashMap;
 
 
 public class PersonalAreaActivity extends AppCompatActivity {
-
     private Button buttonSensitivity;
     private Button buttonMyRecipes;
     private Button buttonFavorites;
+    DatabaseReference sensitivities;
     ArrayList<String> data = new ArrayList<>();
     AlertDialog myDialog;
-
+    ArrayList<String> sensitivities_list=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +97,11 @@ public class PersonalAreaActivity extends AppCompatActivity {
             public void onClick(View v) {
                 showAlert();
             }
+
         });
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String user_ = user.split("@")[0];
+        sensitivities=FirebaseDatabase.getInstance().getReference().child("Users").child(user_).child("Sensitivities");
     }
     private void showAlert()
     {
@@ -121,8 +125,12 @@ public class PersonalAreaActivity extends AppCompatActivity {
                 StringBuilder sb=new StringBuilder();
                 for(Object _data:selectedItems){
                     sb.append(_data.toString()+"\n");
+                    sensitivities_list.add(_data.toString());
                 }
                 Toast.makeText(PersonalAreaActivity.this,sb.toString(),Toast.LENGTH_SHORT).show();
+                for(int i=0;i<sensitivities_list.size();i++) {
+                    sensitivities.push().setValue(sensitivities_list.get(i));
+                }
             }
         });
 
