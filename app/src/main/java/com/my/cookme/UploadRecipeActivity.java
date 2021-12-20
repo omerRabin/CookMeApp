@@ -133,7 +133,6 @@ public class UploadRecipeActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     private void insertRecipeData() {
