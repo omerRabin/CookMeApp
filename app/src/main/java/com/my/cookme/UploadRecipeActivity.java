@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.MediaRouteButton;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -45,22 +46,23 @@ public class UploadRecipeActivity extends AppCompatActivity {
     private Button buttonAddIngredient;
     private ArrayList<Ingredient> ingredients_db;
     private String uniqueKey;
-
+    public static boolean isAdmin=false;
     DatabaseReference recipeDBRef;
     DatabaseReference ingredientDBRef;
     DatabaseReference needToUpdate;
     DatabaseReference usersDBRef;
-
+    DatabaseReference adminsDbRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_recipe);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        //Button buttonAddIngredient;
         recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
         ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
         needToUpdate = FirebaseDatabase.getInstance().getReference().child("Update");
         usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        adminsDbRef = FirebaseDatabase.getInstance().getReference().child("Admins");
 
         this.editTextName = findViewById(R.id.editTextRecipeName);
         this.editTextDescription = findViewById(R.id.editTextDescription);
@@ -69,11 +71,10 @@ public class UploadRecipeActivity extends AppCompatActivity {
         this.buttonInsertData = findViewById(R.id.buttonInsertData);
         this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
         this.uniqueKey = null;
+        //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
+        //if (!isAdmin())
 
-        if (!isAdmin())
-            this.buttonAddIngredient.setVisibility(View.GONE);
-
-        this.buttonAddIngredient.setOnClickListener(new View.OnClickListener() {
+        buttonAddIngredient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(UploadRecipeActivity.this, UploadIngredientActivity.class);
@@ -106,11 +107,35 @@ public class UploadRecipeActivity extends AppCompatActivity {
                 insertRecipeData();
             }
         });
-    }
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+        // Try to do what yoel tried
+        adminsDbRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
 
-    public static boolean isAdmin() {
-        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        return user.equals("yoel2810@gmail.com") || user.equals("omerrabin1289@gmail.com") || user.equals("amittzumi@hotmail.com");
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                //counter=0;
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                }
+                else {
+
+                    ArrayList<String> objectHashMap = (ArrayList<String>) task.getResult().getValue();
+                    boolean flag=true;
+                    for(int i=1;i<objectHashMap.size();i++){
+                        Toast.makeText(UploadRecipeActivity.this, "a", Toast.LENGTH_LONG).show();
+                        if(user.equals(objectHashMap.get(i))){
+                            flag=false;
+                        }
+                    }
+                    if(flag){
+                        buttonAddIngredient.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+        });
+
+
     }
 
     private void insertRecipeData() {
