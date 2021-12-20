@@ -44,10 +44,12 @@ public class UploadRecipeActivity extends AppCompatActivity {
     private Button buttonInsertData;
     private Button buttonAddIngredient;
     private ArrayList<Ingredient> ingredients_db;
+    private String uniqueKey;
 
     DatabaseReference recipeDBRef;
     DatabaseReference ingredientDBRef;
     DatabaseReference needToUpdate;
+    DatabaseReference usersDBRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
         recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
         ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
         needToUpdate = FirebaseDatabase.getInstance().getReference().child("Update");
+        usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         this.editTextName = findViewById(R.id.editTextRecipeName);
         this.editTextDescription = findViewById(R.id.editTextDescription);
@@ -65,6 +68,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
         this.editTextPreparationMethod = findViewById(R.id.editTextPreparationMethod);
         this.buttonInsertData = findViewById(R.id.buttonInsertData);
         this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
+        this.uniqueKey = null;
 
         if (!isAdmin())
             this.buttonAddIngredient.setVisibility(View.GONE);
@@ -141,7 +145,16 @@ public class UploadRecipeActivity extends AppCompatActivity {
         Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
                 recipeName, ingredientList, description, preparationMethod);
 
-        recipeDBRef.push().setValue(recipe);
+        recipeDBRef.push().setValue(recipe, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                uniqueKey = databaseReference.getKey();
+                //Toast.makeText(UploadRecipeActivity.this, uniqueKey, Toast.LENGTH_LONG).show();
+                String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+                if (uniqueKey != null)
+                    usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
+            }
+        });
     }
 
     private void showPopupIngredient(List<String> missingIngredients) {
