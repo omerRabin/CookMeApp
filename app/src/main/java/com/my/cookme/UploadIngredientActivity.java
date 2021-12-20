@@ -64,7 +64,7 @@ public class UploadIngredientActivity extends AppCompatActivity {
     }
 
     private void deleteUpdates() {
-        updateDBRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+        updateDBRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() { // deletes
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Toast.makeText(UploadIngredientActivity.this, "idk", Toast.LENGTH_SHORT).show();
@@ -90,7 +90,7 @@ public class UploadIngredientActivity extends AppCompatActivity {
                 }
                 else {
                     String content = "";
-                    HashMap<String, String> objectHashMap = (HashMap<String, String>) task.getResult().getValue();
+                    HashMap<String, String> objectHashMap = (HashMap<String, String>) task.getResult().getValue(); // get all the missing ingredients
 
                     if (objectHashMap == null) {
                         textViewShowUpdates.setText("");
