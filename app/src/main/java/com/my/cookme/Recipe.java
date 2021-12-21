@@ -14,6 +14,7 @@ public class Recipe {
     private List<Ingredient> ingredients;
     private String description;
     private String preparationMethod;
+    private String imageUrl;
 
     public Recipe(String ownerID, String name, List<Ingredient> ingredients, String description, String preparationMethod) {
         this.ownerID = ownerID;

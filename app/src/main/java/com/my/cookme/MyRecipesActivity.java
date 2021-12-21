@@ -2,6 +2,7 @@ package com.my.cookme;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -21,10 +22,11 @@ import java.util.List;
 
 public class MyRecipesActivity extends AppCompatActivity {
 
-    private TextView showIngredients;
-
     DatabaseReference usersDBRef;
     DatabaseReference recipesDBRef;
+
+    private RecyclerView mRecyclerView;
+    private ImageAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +38,6 @@ public class MyRecipesActivity extends AppCompatActivity {
         recipesDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
 
         List<String> myRecipes = new ArrayList<>();
-        this.showIngredients = findViewById(R.id.textViewIngredients);
 
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
 
@@ -70,7 +71,7 @@ public class MyRecipesActivity extends AppCompatActivity {
                                     String preparationMethod = (String) recipeHashMap.get("preparationMethod");
                                     String uploadDate = (String) recipeHashMap.get("uploadDate");
                                     Recipe recipe = new Recipe(ownerID, name, ingredients, description, preparationMethod);
-                                    showIngredients.setText(showIngredients.getText() + name + "\n");
+                                    //showIngredients.setText(showIngredients.getText() + name + "\n");
                                 }
                             }
                         });

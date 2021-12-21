@@ -1,20 +1,27 @@
 package com.my.cookme;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.MediaRouteButton;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -22,6 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +38,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +52,8 @@ import java.util.Properties;
 
 public class UploadRecipeActivity extends AppCompatActivity {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
+
     private EditText editTextName;
     private EditText editTextDescription;
     private EditText editTextIngredients;
@@ -46,12 +62,20 @@ public class UploadRecipeActivity extends AppCompatActivity {
     private Button buttonAddIngredient;
     private ArrayList<Ingredient> ingredients_db;
     private String uniqueKey;
-    public static boolean isAdmin=false;
+    private Button buttonChooseImage;
+    private ImageView imageView;
+    private Uri imageUri;
+    public static boolean isAdmin = false;
+
+
     DatabaseReference recipeDBRef;
     DatabaseReference ingredientDBRef;
     DatabaseReference needToUpdate;
     DatabaseReference usersDBRef;
     DatabaseReference adminsDbRef;
+
+    StorageReference storageReference;
+    DatabaseReference databaseReference;
 
 
     @Override
@@ -66,12 +90,17 @@ public class UploadRecipeActivity extends AppCompatActivity {
         usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
         adminsDbRef = FirebaseDatabase.getInstance().getReference().child("Admins");
 
+        storageReference = FirebaseStorage.getInstance().getReference("uploads");
+        databaseReference = FirebaseDatabase.getInstance().getReference("uploads");
+
         this.editTextName = findViewById(R.id.editTextRecipeName);
         this.editTextDescription = findViewById(R.id.editTextDescription);
         this.editTextIngredients = findViewById(R.id.editTextIngredients);
         this.editTextPreparationMethod = findViewById(R.id.editTextPreparationMethod);
         this.buttonInsertData = findViewById(R.id.buttonInsertData);
         this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
+        this.buttonChooseImage = findViewById(R.id.button_choose_image);
+        this.imageView = findViewById(R.id.imageView);
         this.uniqueKey = null;
         //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
         //if (!isAdmin())
@@ -106,6 +135,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 insertRecipeData();
+                uploadFile();
             }
         });
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]; // gets the current username
@@ -133,6 +163,58 @@ public class UploadRecipeActivity extends AppCompatActivity {
             }
         });
 
+
+        this.buttonChooseImage.setOnClickListener(v -> mgetContent.launch("image/*"));
+    }
+
+
+    ActivityResultLauncher<String> mgetContent = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            new ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri result) {
+                    if (result != null) {
+                        //imageView.setImageURI(result);
+                        imageUri = result;
+                        Picasso.with(UploadRecipeActivity.this).load(result).into(imageView);
+                    }
+                }
+            });
+
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cr = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cr.getType(uri));
+    }
+
+    private void uploadFile() {
+        if (this.imageUri != null) {
+            StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+            fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(UploadRecipeActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                    Upload upload = new Upload(editTextName.getText().toString().trim(), taskSnapshot.getUploadSessionUri().toString());
+                    String uploadId = databaseReference.push().getKey();
+                    databaseReference.child(uploadId).setValue(upload);
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(UploadRecipeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                            //if I have time
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void insertRecipeData() {
