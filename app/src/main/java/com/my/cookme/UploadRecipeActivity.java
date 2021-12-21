@@ -61,7 +61,6 @@ public class UploadRecipeActivity extends AppCompatActivity {
     private Button buttonInsertData;
     private Button buttonAddIngredient;
     private ArrayList<Ingredient> ingredients_db;
-    private String uniqueKey;
     private Button buttonChooseImage;
     private ImageView imageView;
     private Uri imageUri;
@@ -101,7 +100,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
         this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
         this.buttonChooseImage = findViewById(R.id.button_choose_image);
         this.imageView = findViewById(R.id.imageView);
-        this.uniqueKey = null;
+        this.imageUri = null;
         //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
         //if (!isAdmin())
 
@@ -135,7 +134,6 @@ public class UploadRecipeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 insertRecipeData();
-                uploadFile();
             }
         });
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]; // gets the current username
@@ -188,16 +186,61 @@ public class UploadRecipeActivity extends AppCompatActivity {
         return mime.getExtensionFromMimeType(cr.getType(uri));
     }
 
-    private void uploadFile() {
+    private void insertRecipeData() {
         if (this.imageUri != null) {
             StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
             fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Toast.makeText(UploadRecipeActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                    Upload upload = new Upload(editTextName.getText().toString().trim(), taskSnapshot.getUploadSessionUri().toString());
-                    String uploadId = databaseReference.push().getKey();
-                    databaseReference.child(uploadId).setValue(upload);
+                    //taskSnapshot.getMetadata().getReference().getDownloadUrl().toString()
+                    //Toast.makeText(UploadRecipeActivity.this, taskSnapshot.getMetadata().getReference().getDownloadUrl().toString(), Toast.LENGTH_LONG).show();
+
+                    String recipeName = editTextName.getText().toString();
+                    String description = editTextDescription.getText().toString();
+                    String ingredients = editTextIngredients.getText().toString();
+                    String preparationMethod = editTextPreparationMethod.getText().toString();
+                    String[] lines = ingredients.split("\n"); // every line is a different ingredient
+                    List<Ingredient> ingredientList = new ArrayList<>();
+
+                    ArrayList<String> missingIngredients = new ArrayList<>();
+
+
+                    for (String line : lines) { // checking if some ingredients do not exist in our db
+                        boolean flag = false;
+                        for (Ingredient ing : ingredients_db) {
+                            if (line.toLowerCase().contains(ing.getName())) {
+                                ingredientList.add(new Ingredient(ing.getName(), line, ing.getCategory()));
+                                flag = true;
+                            }
+                        }
+                        if (flag == false) {
+                            missingIngredients.add(line);
+                            ingredientList.add(new Ingredient(line, line, "Unknown"));
+                        }
+                    }
+
+                    fileReference.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            String url = task.getResult().toString();
+                            Toast.makeText(UploadRecipeActivity.this, task.getResult().toString(), Toast.LENGTH_LONG).show();
+                            Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                                    recipeName, ingredientList, description, preparationMethod, url); // creating a new recipe
+
+                            boolean flag = false;
+                            if (missingIngredients.size() > 0) {
+                                showPopupIngredient(missingIngredients, recipe);
+                                flag = true;
+                            }
+
+                            if (flag == false) {
+                                pushRecipe(recipe);
+                            }
+
+                        }
+                    });
+
+
                 }
             })
                     .addOnFailureListener(new OnFailureListener() {
@@ -205,68 +248,12 @@ public class UploadRecipeActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(UploadRecipeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                            //if I have time
-                        }
                     });
         } else {
             Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void insertRecipeData() {
-
-        String recipeName = this.editTextName.getText().toString();
-        String description = this.editTextDescription.getText().toString();
-        String ingredients = this.editTextIngredients.getText().toString();
-        String preparationMethod = this.editTextPreparationMethod.getText().toString();
-        String[] lines = ingredients.split("\n"); // every line is a different ingredient
-        List<Ingredient> ingredientList = new ArrayList<>();
-
-        ArrayList<String> missingIngredients = new ArrayList<>();
-
-
-        for (String line : lines) { // checking if some ingredients do not exist in our db
-            boolean flag = false;
-            for (Ingredient ing : ingredients_db) {
-                if (line.toLowerCase().contains(ing.getName())) {
-                    ingredientList.add(new Ingredient(ing.getName(), line, ing.getCategory()));
-                    flag = true;
-                }
-            }
-            if (flag == false) {
-                missingIngredients.add(line);
-                ingredientList.add(new Ingredient(line, line, "Unknown"));
-            }
-        }
-
-        Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                recipeName, ingredientList, description, preparationMethod); // creating a new recipe
-
-        boolean flag = false;
-
-        if (missingIngredients.size() > 0) {
-            showPopupIngredient(missingIngredients, recipe);
-            flag = true;
-        }
-
-        if (flag == false) {
-            recipeDBRef.push().setValue(recipe, new DatabaseReference.CompletionListener() { // adding the new recipe to the db
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    uniqueKey = databaseReference.getKey();
-                    //Toast.makeText(UploadRecipeActivity.this, uniqueKey, Toast.LENGTH_LONG).show();
-                    String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
-                    if (uniqueKey != null)
-                        usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
-                }
-            });
-        }
-
-    }
 
     private void showPopupIngredient(List<String> missingIngredients, Recipe recipe) {
         AlertDialog.Builder builder = new AlertDialog.Builder(UploadRecipeActivity.this); // creating a popup dialog
@@ -294,16 +281,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
                 if (recipe != null) {
-                    recipeDBRef.push().setValue(recipe, new DatabaseReference.CompletionListener() { // adding the new recipe to the db
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            uniqueKey = databaseReference.getKey();
-                            //Toast.makeText(UploadRecipeActivity.this, uniqueKey, Toast.LENGTH_LONG).show();
-                            String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
-                            if (uniqueKey != null)
-                                usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
-                        }
-                    });
+                    pushRecipe(recipe);
                 }
 
                 Toast.makeText(UploadRecipeActivity.this, "A request to update our database has been sent to one of our admins", Toast.LENGTH_LONG).show();
@@ -312,6 +290,13 @@ public class UploadRecipeActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    private void pushRecipe(Recipe recipe) {
+        String uniqueKey = recipeDBRef.push().getKey();
+        recipeDBRef.child(uniqueKey).setValue(recipe);
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+        usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
     }
 
     private void sendUpdate(List<String> missingIngredients) {

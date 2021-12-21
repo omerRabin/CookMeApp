@@ -16,7 +16,7 @@ public class Recipe {
     private String preparationMethod;
     private String imageUrl;
 
-    public Recipe(String ownerID, String name, List<Ingredient> ingredients, String description, String preparationMethod) {
+    public Recipe(String ownerID, String name, List<Ingredient> ingredients, String description, String preparationMethod, String imageUrl) {
         this.ownerID = ownerID;
         this.name = name;
         this.ingredients = ingredients;
@@ -25,6 +25,15 @@ public class Recipe {
         Date date = new Date();
         this.uploadDate = formatter.format(date);
         this.likesNumber = 0;
+        this.imageUrl = imageUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public static SimpleDateFormat getFormatter() {

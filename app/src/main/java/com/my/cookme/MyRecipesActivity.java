@@ -2,6 +2,7 @@ package com.my.cookme;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
@@ -24,9 +25,11 @@ public class MyRecipesActivity extends AppCompatActivity {
 
     DatabaseReference usersDBRef;
     DatabaseReference recipesDBRef;
+    private List<Recipe> mUploads;
 
     private RecyclerView mRecyclerView;
     private ImageAdapter mAdapter;
+    private int index;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,12 @@ public class MyRecipesActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("CookMe");
         usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
         recipesDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
+
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mUploads = new ArrayList<>();
 
         List<String> myRecipes = new ArrayList<>();
 
@@ -54,6 +63,7 @@ public class MyRecipesActivity extends AppCompatActivity {
                         return;
                     }
 
+                    index = 0;
                     for (String obj : objectHashMap.values()) {
                         recipesDBRef.child(obj).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                             @Override
@@ -70,17 +80,27 @@ public class MyRecipesActivity extends AppCompatActivity {
                                     String name = (String) recipeHashMap.get("name");
                                     String preparationMethod = (String) recipeHashMap.get("preparationMethod");
                                     String uploadDate = (String) recipeHashMap.get("uploadDate");
-                                    Recipe recipe = new Recipe(ownerID, name, ingredients, description, preparationMethod);
+                                    String imageUrl = (String) recipeHashMap.get("imageUrl");
+                                    Recipe recipe = new Recipe(ownerID, name, ingredients, description, preparationMethod, imageUrl);
+                                    mUploads.add(recipe);
+                                    index++;
+                                    if (index == objectHashMap.size()) {
+                                        mAdapter = new ImageAdapter(MyRecipesActivity.this, mUploads);
+                                        mRecyclerView.setAdapter(mAdapter);
+                                    }
                                     //showIngredients.setText(showIngredients.getText() + name + "\n");
                                 }
                             }
                         });
                         Toast.makeText(MyRecipesActivity.this, obj, Toast.LENGTH_SHORT).show();
                     }
+
+
                 }
             }
         });
     }
+
 
     private ArrayList<Ingredient> convertToIngredientsList(ArrayList<HashMap<String, String>> list) {
         ArrayList<Ingredient> ingredientArrayList = new ArrayList<>();
