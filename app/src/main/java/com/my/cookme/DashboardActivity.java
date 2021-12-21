@@ -6,23 +6,33 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class DashboardActivity extends Activity {
@@ -30,6 +40,7 @@ public class DashboardActivity extends Activity {
     private Button upload;
     private Button cookme;
     private Button personalArea;
+
 
     private FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -77,4 +88,6 @@ public class DashboardActivity extends Activity {
 
 
     }
+
+
 }

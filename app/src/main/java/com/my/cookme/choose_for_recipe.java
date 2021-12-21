@@ -1,6 +1,7 @@
 package com.my.cookme;
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,6 +48,8 @@ public class choose_for_recipe extends AppCompatActivity {
     ImageButton cart;
     Button choose;
     Button remove;
+    Button countinue_search;
+
     ArrayAdapter<CosmicBody> adapter;
     static ArrayList<String> cart_list = new ArrayList<>();
     String[] categories = {"Cetgories", "Vegtables&Fruits", "Meat", "Dairy Products", "Spices", "Cereals and Legums", "Fish"};
@@ -134,6 +137,15 @@ public class choose_for_recipe extends AppCompatActivity {
                 builder.show();
             }
         });
+
+        countinue_search=findViewById(R.id.btn_continue_search);
+        this.countinue_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(choose_for_recipe.this, search_recipes.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private ArrayList<CosmicBody> getCosmicBodies() {
@@ -218,5 +230,6 @@ public class choose_for_recipe extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initializeViews();
+
     }
 }

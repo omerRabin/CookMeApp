@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.21302083333333333" />
+        <entry key="..\:/Users/yoel2/AndroidStudioProjects/CookMeApp/app/src/main/res/layout/activity_favorite_recipes.xml" value="0.4" />
         <entry key="..\:/Users/yoel2/AndroidStudioProjects/CookMeApp/app/src/main/res/layout/activity_main.xml" value="0.12708333333333333" />
+        <entry key="..\:/Users/yoel2/AndroidStudioProjects/CookMeApp/app/src/main/res/layout/activity_my_recipes.xml" value="0.4" />
         <entry key="..\:/Users/yoel2/AndroidStudioProjects/CookMeApp/app/src/main/res/layout/activity_upload_ingredient.xml" value="0.25" />
         <entry key="..\:/Users/yoel2/AndroidStudioProjects/CookMeApp/app/src/main/res/layout/activity_upload_recipe.xml" value="0.4" />
         <entry key="..\:/Users/yoel2/AndroidStudioProjects/CookMeApp/app/src/main/res/layout/dashboard.xml" value="0.25" />

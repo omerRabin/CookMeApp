@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.MediaRouteButton;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -44,20 +45,26 @@ public class UploadRecipeActivity extends AppCompatActivity {
     private Button buttonInsertData;
     private Button buttonAddIngredient;
     private ArrayList<Ingredient> ingredients_db;
-
+    private String uniqueKey;
+    public static boolean isAdmin=false;
     DatabaseReference recipeDBRef;
     DatabaseReference ingredientDBRef;
     DatabaseReference needToUpdate;
+    DatabaseReference usersDBRef;
+    DatabaseReference adminsDbRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_recipe);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        //Button buttonAddIngredient;
         recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
         ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
         needToUpdate = FirebaseDatabase.getInstance().getReference().child("Update");
+        usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        adminsDbRef = FirebaseDatabase.getInstance().getReference().child("Admins");
 
         this.editTextName = findViewById(R.id.editTextRecipeName);
         this.editTextDescription = findViewById(R.id.editTextDescription);
@@ -65,11 +72,11 @@ public class UploadRecipeActivity extends AppCompatActivity {
         this.editTextPreparationMethod = findViewById(R.id.editTextPreparationMethod);
         this.buttonInsertData = findViewById(R.id.buttonInsertData);
         this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
+        this.uniqueKey = null;
+        //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
+        //if (!isAdmin())
 
-        if (!isAdmin())
-            this.buttonAddIngredient.setVisibility(View.GONE);
-
-        this.buttonAddIngredient.setOnClickListener(new View.OnClickListener() {
+        buttonAddIngredient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(UploadRecipeActivity.this, UploadIngredientActivity.class);
@@ -78,16 +85,15 @@ public class UploadRecipeActivity extends AppCompatActivity {
         });
 
         this.ingredients_db = new ArrayList<>();
-        ingredientDBRef.addValueEventListener(new ValueEventListener() {
+        ingredientDBRef.addValueEventListener(new ValueEventListener() { // get all the ingredients from the db
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ingredients_db.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     HashMap<String, String> object = (HashMap<String, String>) dataSnapshot.getValue();
                     Ingredient i = new Ingredient(object.get("name"), null, object.get("category"));
-                    ingredients_db.add(i);
+                    ingredients_db.add(i); // adding them to a list
                 }
-
             }
 
             @Override
@@ -102,11 +108,31 @@ public class UploadRecipeActivity extends AppCompatActivity {
                 insertRecipeData();
             }
         });
-    }
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]; // gets the current username
+        // Try to do what yoel tried
+        adminsDbRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() { // gets all the admins for the db
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                //counter=0;
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                } else {
 
-    public static boolean isAdmin() {
-        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        return user.equals("yoel2810@gmail.com") || user.equals("omerrabin1289@gmail.com") || user.equals("amittzumi@hotmail.com");
+                    ArrayList<String> admins = (ArrayList<String>) task.getResult().getValue();
+                    boolean flag = true;
+                    for (int i = 1; i < admins.size(); i++) {
+                        //Toast.makeText(UploadRecipeActivity.this, "a", Toast.LENGTH_LONG).show();
+                        if (user.equals(admins.get(i))) {
+                            flag = false; // if the user is an admin
+                        }
+                    }
+                    if (flag) { // if the user is not an admin
+                        buttonAddIngredient.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
     }
 
     private void insertRecipeData() {
@@ -115,13 +141,13 @@ public class UploadRecipeActivity extends AppCompatActivity {
         String description = this.editTextDescription.getText().toString();
         String ingredients = this.editTextIngredients.getText().toString();
         String preparationMethod = this.editTextPreparationMethod.getText().toString();
-        String[] lines = ingredients.split("\n");
+        String[] lines = ingredients.split("\n"); // every line is a different ingredient
         List<Ingredient> ingredientList = new ArrayList<>();
 
         ArrayList<String> missingIngredients = new ArrayList<>();
 
 
-        for (String line : lines) {
+        for (String line : lines) { // checking if some ingredients do not exist in our db
             boolean flag = false;
             for (Ingredient ing : ingredients_db) {
                 if (line.toLowerCase().contains(ing.getName())) {
@@ -135,17 +161,33 @@ public class UploadRecipeActivity extends AppCompatActivity {
             }
         }
 
-        if (missingIngredients.size() > 0)
-            showPopupIngredient(missingIngredients);
-
         Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                recipeName, ingredientList, description, preparationMethod);
+                recipeName, ingredientList, description, preparationMethod); // creating a new recipe
 
-        recipeDBRef.push().setValue(recipe);
+        boolean flag = false;
+
+        if (missingIngredients.size() > 0) {
+            showPopupIngredient(missingIngredients, recipe);
+            flag = true;
+        }
+
+        if (flag == false) {
+            recipeDBRef.push().setValue(recipe, new DatabaseReference.CompletionListener() { // adding the new recipe to the db
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    uniqueKey = databaseReference.getKey();
+                    //Toast.makeText(UploadRecipeActivity.this, uniqueKey, Toast.LENGTH_LONG).show();
+                    String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+                    if (uniqueKey != null)
+                        usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
+                }
+            });
+        }
+
     }
 
-    private void showPopupIngredient(List<String> missingIngredients) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(UploadRecipeActivity.this);
+    private void showPopupIngredient(List<String> missingIngredients, Recipe recipe) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(UploadRecipeActivity.this); // creating a popup dialog
         builder.setCancelable(true);
         builder.setTitle("We have noticed some ingredients doesn't show up on our database!");
         String popupContent = missingIngredients.get(0) + "\n";
@@ -168,6 +210,20 @@ public class UploadRecipeActivity extends AppCompatActivity {
         builder.setPositiveButton("ok, send", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                if (recipe != null) {
+                    recipeDBRef.push().setValue(recipe, new DatabaseReference.CompletionListener() { // adding the new recipe to the db
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            uniqueKey = databaseReference.getKey();
+                            //Toast.makeText(UploadRecipeActivity.this, uniqueKey, Toast.LENGTH_LONG).show();
+                            String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+                            if (uniqueKey != null)
+                                usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
+                        }
+                    });
+                }
+
                 Toast.makeText(UploadRecipeActivity.this, "A request to update our database has been sent to one of our admins", Toast.LENGTH_LONG).show();
                 sendUpdate(missingIngredients);
                 //relativeLayoutPopup.setVisibility(View.VISIBLE);
