@@ -1,4 +1,7 @@
 package com.my.cookme;
 
-public class search_recipes {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class search_recipes extends AppCompatActivity {
+
 }
