@@ -138,7 +138,8 @@ public class UploadRecipeActivity extends AppCompatActivity {
         });
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]; // gets the current username
         // Try to do what yoel tried
-        adminsDbRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() { // gets all the admins for the db
+        //######################################################################################################################
+        /*adminsDbRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() { // gets all the admins for the db
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 //counter=0;
@@ -159,7 +160,8 @@ public class UploadRecipeActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
+        });*/
+        //######################################################################################################33
 
 
         this.buttonChooseImage.setOnClickListener(v -> mgetContent.launch("image/*"));
@@ -223,7 +225,6 @@ public class UploadRecipeActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
                             String url = task.getResult().toString();
-                            Toast.makeText(UploadRecipeActivity.this, task.getResult().toString(), Toast.LENGTH_LONG).show();
                             Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
                                     recipeName, ingredientList, description, preparationMethod, url); // creating a new recipe
 

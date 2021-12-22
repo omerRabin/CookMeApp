@@ -1,10 +1,12 @@
 package com.my.cookme;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -14,14 +16,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.StreamSupport;
 
-public class MyRecipesActivity extends AppCompatActivity {
+public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter.OnItemClickListener{
 
     DatabaseReference usersDBRef;
     DatabaseReference recipesDBRef;
@@ -51,56 +57,46 @@ public class MyRecipesActivity extends AppCompatActivity {
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
 
 
-        usersDBRef.child(user).child("MyRecipes").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+        usersDBRef.child(user).child("MyRecipes").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                } else {
-                    HashMap<String, String> objectHashMap = (HashMap<String, String>) task.getResult().getValue();
-
-                    if (objectHashMap == null) {
-                        return;
-                    }
-
-                    index = 0;
-                    for (String obj : objectHashMap.values()) {
-                        recipesDBRef.child(obj).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                                if (!task.isSuccessful()) {
-                                    Log.e("firebase", "Error getting data", task.getException());
-                                } else {
-                                    HashMap<String, Object> recipeHashMap = (HashMap<String, Object>) task.getResult().getValue();
-                                    String ownerID = (String) recipeHashMap.get("ownerID");
-                                    String description = (String) recipeHashMap.get("description");
-                                    ArrayList<HashMap<String, String>> ingredientsList = (ArrayList<HashMap<String, String>>) recipeHashMap.get("ingredients");
-                                    ArrayList<Ingredient> ingredients = convertToIngredientsList(ingredientsList);
-                                    Long likesNumber = (Long) recipeHashMap.get("likesNumber");
-                                    String name = (String) recipeHashMap.get("name");
-                                    String preparationMethod = (String) recipeHashMap.get("preparationMethod");
-                                    String uploadDate = (String) recipeHashMap.get("uploadDate");
-                                    String imageUrl = (String) recipeHashMap.get("imageUrl");
-                                    Recipe recipe = new Recipe(ownerID, name, ingredients, description, preparationMethod, imageUrl);
-                                    mUploads.add(recipe);
-                                    index++;
-                                    if (index == objectHashMap.size()) {
-                                        mAdapter = new ImageAdapter(MyRecipesActivity.this, mUploads);
-                                        mRecyclerView.setAdapter(mAdapter);
-                                    }
-                                    //showIngredients.setText(showIngredients.getText() + name + "\n");
-                                }
-                            }
-                        });
-                        Toast.makeText(MyRecipesActivity.this, obj, Toast.LENGTH_SHORT).show();
-                    }
-
-
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                mUploads.clear();
+                for (DataSnapshot postSnapShot : snapshot.getChildren()) {
+                    String recipeKey = postSnapShot.getValue(String.class);
+                    assembleRecipe(recipeKey);
                 }
+
+                mAdapter = new ImageAdapter(MyRecipesActivity.this, mUploads);
+                mRecyclerView.setAdapter(mAdapter);
+                mAdapter.setOnItemClickListener(MyRecipesActivity.this);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MyRecipesActivity.this, "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void assembleRecipe(String recipeKey) {
+        recipesDBRef.child(recipeKey).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    Recipe recipe = task.getResult().getValue(Recipe.class);
+                    mUploads.add(recipe);
+                    index++;
+                    mAdapter = new ImageAdapter(MyRecipesActivity.this, mUploads);
+                    mRecyclerView.setAdapter(mAdapter);
+                    mAdapter.setOnItemClickListener(MyRecipesActivity.this);
+                }
+                else {
+                    Toast.makeText(MyRecipesActivity.this, "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     private ArrayList<Ingredient> convertToIngredientsList(ArrayList<HashMap<String, String>> list) {
         ArrayList<Ingredient> ingredientArrayList = new ArrayList<>();
@@ -108,5 +104,20 @@ public class MyRecipesActivity extends AppCompatActivity {
             ingredientArrayList.add(new Ingredient(hash.get("name"), hash.get("description"), hash.get("category")));
         }
         return ingredientArrayList;
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Toast.makeText(this, "normal click at  position: " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onShowRecipeClick(int position) {
+        Toast.makeText(this, "show click at  position: " + position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteClick(int position) {
+        Toast.makeText(this, "delete click at  position: " + position, Toast.LENGTH_SHORT).show();
     }
 }

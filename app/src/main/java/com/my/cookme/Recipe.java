@@ -1,5 +1,7 @@
 package com.my.cookme;
 
+import com.google.firebase.database.Exclude;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,7 @@ public class Recipe {
     private String description;
     private String preparationMethod;
     private String imageUrl;
+    private String mKey;
 
     public Recipe(String ownerID, String name, List<Ingredient> ingredients, String description, String preparationMethod, String imageUrl) {
         this.ownerID = ownerID;
@@ -26,6 +29,20 @@ public class Recipe {
         this.uploadDate = formatter.format(date);
         this.likesNumber = 0;
         this.imageUrl = imageUrl;
+    }
+
+    public Recipe() {
+
+    }
+
+    @Exclude
+    public String getKey() {
+        return mKey;
+    }
+
+    @Exclude
+    public void setKey(String mKey) {
+        this.mKey = mKey;
     }
 
     public String getImageUrl() {

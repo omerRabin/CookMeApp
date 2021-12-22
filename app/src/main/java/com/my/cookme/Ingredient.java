@@ -13,6 +13,10 @@ public class Ingredient {
         this.category = category;
     }
 
+    public Ingredient() {
+
+    }
+
     public String getName() {
         return name;
     }
