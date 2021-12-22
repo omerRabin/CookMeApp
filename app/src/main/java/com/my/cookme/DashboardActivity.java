@@ -15,12 +15,20 @@ import android.widget.Toast;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+
+
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -35,7 +43,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class DashboardActivity extends Activity {
+public class DashboardActivity extends AppCompatActivity {
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
     private TextView logout;
     private Button upload;
     private Button cookme;
@@ -48,7 +59,14 @@ public class DashboardActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dashboard);
+        drawerLayout = findViewById(R.id.drawer_layout);
+       navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar3);
 
+       setSupportActionBar(toolbar);
+       ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout,toolbar,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+       drawerLayout.addDrawerListener(toggle);
+       toggle.syncState();
         logout = findViewById(R.id.LogOutTv);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
