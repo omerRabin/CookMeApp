@@ -2,6 +2,7 @@ package com.my.cookme;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -20,7 +21,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
-    private EditText emailEt,passwordEt;
+    private EditText emailEt, passwordEt;
     private Button SignInButton;
     private TextView SignUpTv;
     private ProgressDialog progressDialog;
@@ -30,12 +31,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        firebaseAuth=FirebaseAuth.getInstance();
-        emailEt=findViewById(R.id.email);
-        passwordEt=findViewById(R.id.password);
-        SignInButton=findViewById(R.id.login);
-        progressDialog=new ProgressDialog(this);
-        SignUpTv=findViewById(R.id.signUpTv);
+        firebaseAuth = FirebaseAuth.getInstance();
+        emailEt = findViewById(R.id.email);
+        passwordEt = findViewById(R.id.password);
+        SignInButton = findViewById(R.id.login);
+        progressDialog = new ProgressDialog(this);
+        SignUpTv = findViewById(R.id.signUpTv);
 
         SignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,40 +47,39 @@ public class MainActivity extends AppCompatActivity {
         SignUpTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,SignUpActivity.class);
+                Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
                 startActivity(intent);
             }
         });
+
+
     }
 
 
-
-    private void Login(){
-        String email=emailEt.getText().toString();
-        String password=passwordEt.getText().toString();
-        if(TextUtils.isEmpty(email)){
+    private void Login() {
+        String email = emailEt.getText().toString();
+        String password = passwordEt.getText().toString();
+        if (TextUtils.isEmpty(email)) {
             emailEt.setError("Enter your email");
             return;
-        }
-        else if(TextUtils.isEmpty(password)){
+        } else if (TextUtils.isEmpty(password)) {
             passwordEt.setError("Enter your password");
             return;
         }
         progressDialog.setMessage("Please wait...");
         progressDialog.show();
         progressDialog.setCanceledOnTouchOutside(false);
-        firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    Toast.makeText(MainActivity.this,"Login Successfully",Toast.LENGTH_LONG).show();
-                    Intent intent=new Intent(MainActivity.this,DashboardActivity.class);
+                if (task.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, "Login Successfully", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
                     startActivity(intent);
                     finish();
-                }
-                else{
-                    Toast.makeText(MainActivity.this,"Sign In fail!",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Sign In fail!", Toast.LENGTH_LONG).show();
                 }
                 progressDialog.dismiss();
             }

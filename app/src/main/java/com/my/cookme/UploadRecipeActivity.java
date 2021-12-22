@@ -1,20 +1,27 @@
 package com.my.cookme;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.MediaRouteButton;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -22,6 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +38,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +52,8 @@ import java.util.Properties;
 
 public class UploadRecipeActivity extends AppCompatActivity {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
+
     private EditText editTextName;
     private EditText editTextDescription;
     private EditText editTextIngredients;
@@ -45,13 +61,20 @@ public class UploadRecipeActivity extends AppCompatActivity {
     private Button buttonInsertData;
     private Button buttonAddIngredient;
     private ArrayList<Ingredient> ingredients_db;
-    private String uniqueKey;
-    public static boolean isAdmin=false;
+    private Button buttonChooseImage;
+    private ImageView imageView;
+    private Uri imageUri;
+    public static boolean isAdmin = false;
+
+
     DatabaseReference recipeDBRef;
     DatabaseReference ingredientDBRef;
     DatabaseReference needToUpdate;
     DatabaseReference usersDBRef;
     DatabaseReference adminsDbRef;
+
+    StorageReference storageReference;
+    DatabaseReference databaseReference;
 
 
     @Override
@@ -66,13 +89,18 @@ public class UploadRecipeActivity extends AppCompatActivity {
         usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
         adminsDbRef = FirebaseDatabase.getInstance().getReference().child("Admins");
 
+        storageReference = FirebaseStorage.getInstance().getReference("uploads");
+        databaseReference = FirebaseDatabase.getInstance().getReference("uploads");
+
         this.editTextName = findViewById(R.id.editTextRecipeName);
         this.editTextDescription = findViewById(R.id.editTextDescription);
         this.editTextIngredients = findViewById(R.id.editTextIngredients);
         this.editTextPreparationMethod = findViewById(R.id.editTextPreparationMethod);
         this.buttonInsertData = findViewById(R.id.buttonInsertData);
         this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
-        this.uniqueKey = null;
+        this.buttonChooseImage = findViewById(R.id.button_choose_image);
+        this.imageView = findViewById(R.id.imageView);
+        this.imageUri = null;
         //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
         //if (!isAdmin())
 
@@ -110,7 +138,8 @@ public class UploadRecipeActivity extends AppCompatActivity {
         });
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]; // gets the current username
         // Try to do what yoel tried
-        adminsDbRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() { // gets all the admins for the db
+        //######################################################################################################################
+        /*adminsDbRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() { // gets all the admins for the db
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 //counter=0;
@@ -131,60 +160,101 @@ public class UploadRecipeActivity extends AppCompatActivity {
                     }
                 }
             }
-        });
+        });*/
+        //######################################################################################################33
 
+
+        this.buttonChooseImage.setOnClickListener(v -> mgetContent.launch("image/*"));
+    }
+
+
+    ActivityResultLauncher<String> mgetContent = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            new ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri result) {
+                    if (result != null) {
+                        //imageView.setImageURI(result);
+                        imageUri = result;
+                        Picasso.with(UploadRecipeActivity.this).load(result).into(imageView);
+                    }
+                }
+            });
+
+
+    private String getFileExtension(Uri uri) {
+        ContentResolver cr = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cr.getType(uri));
     }
 
     private void insertRecipeData() {
-
-        String recipeName = this.editTextName.getText().toString();
-        String description = this.editTextDescription.getText().toString();
-        String ingredients = this.editTextIngredients.getText().toString();
-        String preparationMethod = this.editTextPreparationMethod.getText().toString();
-        String[] lines = ingredients.split("\n"); // every line is a different ingredient
-        List<Ingredient> ingredientList = new ArrayList<>();
-
-        ArrayList<String> missingIngredients = new ArrayList<>();
-
-
-        for (String line : lines) { // checking if some ingredients do not exist in our db
-            boolean flag = false;
-            for (Ingredient ing : ingredients_db) {
-                if (line.toLowerCase().contains(ing.getName())) {
-                    ingredientList.add(new Ingredient(ing.getName(), line, ing.getCategory()));
-                    flag = true;
-                }
-            }
-            if (flag == false) {
-                missingIngredients.add(line);
-                ingredientList.add(new Ingredient(line, line, "Unknown"));
-            }
-        }
-
-        Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                recipeName, ingredientList, description, preparationMethod); // creating a new recipe
-
-        boolean flag = false;
-
-        if (missingIngredients.size() > 0) {
-            showPopupIngredient(missingIngredients, recipe);
-            flag = true;
-        }
-
-        if (flag == false) {
-            recipeDBRef.push().setValue(recipe, new DatabaseReference.CompletionListener() { // adding the new recipe to the db
+        if (this.imageUri != null) {
+            StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+            fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    uniqueKey = databaseReference.getKey();
-                    //Toast.makeText(UploadRecipeActivity.this, uniqueKey, Toast.LENGTH_LONG).show();
-                    String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
-                    if (uniqueKey != null)
-                        usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
-                }
-            });
-        }
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    //taskSnapshot.getMetadata().getReference().getDownloadUrl().toString()
+                    //Toast.makeText(UploadRecipeActivity.this, taskSnapshot.getMetadata().getReference().getDownloadUrl().toString(), Toast.LENGTH_LONG).show();
 
+                    String recipeName = editTextName.getText().toString();
+                    String description = editTextDescription.getText().toString();
+                    String ingredients = editTextIngredients.getText().toString();
+                    String preparationMethod = editTextPreparationMethod.getText().toString();
+                    String[] lines = ingredients.split("\n"); // every line is a different ingredient
+                    List<Ingredient> ingredientList = new ArrayList<>();
+
+                    ArrayList<String> missingIngredients = new ArrayList<>();
+
+
+                    for (String line : lines) { // checking if some ingredients do not exist in our db
+                        boolean flag = false;
+                        for (Ingredient ing : ingredients_db) {
+                            if (line.toLowerCase().contains(ing.getName())) {
+                                ingredientList.add(new Ingredient(ing.getName(), line, ing.getCategory()));
+                                flag = true;
+                            }
+                        }
+                        if (flag == false) {
+                            missingIngredients.add(line);
+                            ingredientList.add(new Ingredient(line, line, "Unknown"));
+                        }
+                    }
+
+                    fileReference.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            String url = task.getResult().toString();
+                            Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                                    recipeName, ingredientList, description, preparationMethod, url); // creating a new recipe
+
+                            boolean flag = false;
+                            if (missingIngredients.size() > 0) {
+                                showPopupIngredient(missingIngredients, recipe);
+                                flag = true;
+                            }
+
+                            if (flag == false) {
+                                pushRecipe(recipe);
+                            }
+
+                        }
+                    });
+
+
+                }
+            })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(UploadRecipeActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     private void showPopupIngredient(List<String> missingIngredients, Recipe recipe) {
         AlertDialog.Builder builder = new AlertDialog.Builder(UploadRecipeActivity.this); // creating a popup dialog
@@ -212,16 +282,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
 
                 if (recipe != null) {
-                    recipeDBRef.push().setValue(recipe, new DatabaseReference.CompletionListener() { // adding the new recipe to the db
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            uniqueKey = databaseReference.getKey();
-                            //Toast.makeText(UploadRecipeActivity.this, uniqueKey, Toast.LENGTH_LONG).show();
-                            String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
-                            if (uniqueKey != null)
-                                usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
-                        }
-                    });
+                    pushRecipe(recipe);
                 }
 
                 Toast.makeText(UploadRecipeActivity.this, "A request to update our database has been sent to one of our admins", Toast.LENGTH_LONG).show();
@@ -230,6 +291,13 @@ public class UploadRecipeActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    private void pushRecipe(Recipe recipe) {
+        String uniqueKey = recipeDBRef.push().getKey();
+        recipeDBRef.child(uniqueKey).setValue(recipe);
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+        usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
     }
 
     private void sendUpdate(List<String> missingIngredients) {

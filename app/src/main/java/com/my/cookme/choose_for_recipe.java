@@ -165,11 +165,6 @@ public class choose_for_recipe extends AppCompatActivity {
                         //Toast.makeText(choose_for_recipe.this, "yoel", Toast.LENGTH_SHORT).show();
                         HashMap<String, Object> o = (HashMap<String, Object>) (task.getResult().getValue());
                         Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                        Object first = o.get("-MqQpbvASutrrPdMWgCr");
-                        Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                        HashMap<String, String> second = (HashMap<String, String>) (first);
-                        Log.d("firebase", String.valueOf(task.getResult().getValue()));
-
                         ArrayList<Object> l1 = new ArrayList<>();
                         for (Object obj : o.values()) {
                             l1.add(obj);
