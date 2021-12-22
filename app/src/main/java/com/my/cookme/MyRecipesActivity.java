@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -114,7 +116,15 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(this, "normal click at  position: " + position, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MyRecipesActivity.this, ShowRecipe.class);
+        Recipe selectedItem = mUploads.get(position);
+        try {
+            intent.putExtra("recipe", Recipe.serialize(selectedItem));
+            startActivity(intent);
+        }
+        catch (IOException e) {
+            Toast.makeText(MyRecipesActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

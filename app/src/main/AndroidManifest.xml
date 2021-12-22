@@ -12,17 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CookMeApp">
         <activity
-            android:name=".PersonalAreaActivity"
-            android:parentActivityName=".DashboardActivity"
+            android:name=".ShowRecipe"
             android:exported="true" />
+        <activity
+            android:name=".PersonalAreaActivity"
+            android:exported="true"
+            android:parentActivityName=".DashboardActivity" />
         <activity
             android:name=".MyRecipesActivity"
-            android:parentActivityName=".PersonalAreaActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:parentActivityName=".PersonalAreaActivity" />
         <activity
             android:name=".FavoriteRecipesActivity"
-            android:parentActivityName=".PersonalAreaActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:parentActivityName=".PersonalAreaActivity" />
         <activity
             android:name=".UploadIngredientActivity"
             android:exported="true"
