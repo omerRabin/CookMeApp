@@ -11,7 +11,10 @@ public class ShowRecipe extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_recipe);
 
-        Object recipe = getIntent().getByteArrayExtra("recipe");
+
+// To retrieve object in second Activity
+        Object o = getIntent().getSerializableExtra("recipe");
+
         int x = 1;
     }
 }

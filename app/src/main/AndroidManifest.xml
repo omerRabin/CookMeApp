@@ -51,6 +51,10 @@
             android:name=".SignUpActivity"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".DashboardActivity" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

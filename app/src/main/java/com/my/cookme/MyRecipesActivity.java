@@ -118,13 +118,8 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
     public void onItemClick(int position) {
         Intent intent = new Intent(MyRecipesActivity.this, ShowRecipe.class);
         Recipe selectedItem = mUploads.get(position);
-        try {
-            intent.putExtra("recipe", Recipe.serialize(selectedItem));
-            startActivity(intent);
-        }
-        catch (IOException e) {
-            Toast.makeText(MyRecipesActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-        }
+        intent.putExtra("recipe", selectedItem);
+        startActivity(intent);
     }
 
     @Override

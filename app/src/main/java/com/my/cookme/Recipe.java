@@ -7,11 +7,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class Recipe {
+public class Recipe implements Serializable {
     private static SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
     //private String recipeID;
     private String ownerID;
@@ -122,7 +123,7 @@ public class Recipe {
         this.preparationMethod = preparationMethod;
     }
 
-    public static byte[] serialize(Recipe recipe) throws IOException {
+    /*public static byte[] serialize(Recipe recipe) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);
         oos.writeObject(recipe);
@@ -131,12 +132,12 @@ public class Recipe {
         /*ByteArrayOutputStream out = new ByteArrayOutputStream();
         ObjectOutputStream os = new ObjectOutputStream(out);
         os.writeObject(recipe);
-        return out.toByteArray();*/
+        return out.toByteArray();
     }
 
     public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         ObjectInputStream is = new ObjectInputStream(in);
         return is.readObject();
-    }
+    }*/
 }
