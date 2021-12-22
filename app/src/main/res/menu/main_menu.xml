@@ -3,39 +3,37 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_logout"
-            android:title="Log Out" />
+            android:id="@+id/nav_home"
+            android:icon="@drawable/home_icon"
+            android:title="Home"></item>
         <item
-            android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_profile"
-            android:title="Profile" />
+            android:id="@+id/nav_cookme"
+            android:icon="@drawable/food_cookme"
+            android:title="CookMe"></item>
         <item
-            android:id="@+id/nav_upload_a_recipe"
-            android:icon="@drawable/ic_food_bank"
-            android:title="Upload a Recipe" />
+            android:id="@+id/nav_upload_recipe"
+            android:icon="@drawable/upload_recipe"
+            android:title="Upload Recipe"></item>
     </group>
 
-
-    <item android:title="Profile">
-        <menu>
-            <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
+        <item android:title="Profile">
+            <menu>
                 <item
-                    android:id="@+id/nav_i_dont_know"
-                    android:icon="@drawable/ic_food_bank"
-                    android:title="I don't know" />
-            </group>
-        </menu>
-    </item>
+                    android:id="@+id/nav_login"
+                    android:icon="@drawable/login"
+                    android:title="Login"></item>
+                <item
+                    android:id="@+id/nav_profile"
+                    android:icon="@drawable/user"
+                    android:title="Profile"></item>
+                <item
+                    android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_logout"
+                    android:title="LogOut"></item>
+            </menu>
+        </item>
+    </group>
 
-
-    <item android:title="I don't know">
-        <menu>
-            <item
-                android:id="@+id/nav_i_dont_know2"
-                android:icon="@drawable/ic_food_bank"
-                android:title="I don't know" />
-        </menu>
-    </item>
 
 </menu>

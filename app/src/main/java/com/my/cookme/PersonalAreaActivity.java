@@ -38,8 +38,6 @@ public class PersonalAreaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_area);
-        getSupportActionBar().setTitle("CookMe");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.buttonFavorites = findViewById(R.id.buttonFavorite);
         this.buttonMyRecipes = findViewById(R.id.buttonMyRecipes);
         this.buttonSensitivity = findViewById(R.id.buttonSensitivity);
