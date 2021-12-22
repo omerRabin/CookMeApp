@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -20,6 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,15 +30,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter.OnItemClickListener{
+public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter.OnItemClickListener {
 
     DatabaseReference usersDBRef;
     DatabaseReference recipesDBRef;
     private List<Recipe> mUploads;
+    private String recipeKeyKey;
 
     private RecyclerView mRecyclerView;
     private ImageAdapter mAdapter;
-    private int index;
+    private FirebaseStorage mStorage;
+    private ValueEventListener mDBListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,8 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
         getSupportActionBar().setTitle("CookMe");
         usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
         recipesDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
+        mStorage = FirebaseStorage.getInstance();
+        this.recipeKeyKey = null;
 
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -52,24 +59,26 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
 
         mUploads = new ArrayList<>();
 
+        mAdapter = new ImageAdapter(MyRecipesActivity.this, mUploads);
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(MyRecipesActivity.this);
+
         List<String> myRecipes = new ArrayList<>();
 
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
 
 
-
-        usersDBRef.child(user).child("MyRecipes").addValueEventListener(new ValueEventListener() {
+        mDBListener = usersDBRef.child(user).child("MyRecipes").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 mUploads.clear();
                 for (DataSnapshot postSnapShot : snapshot.getChildren()) {
                     String recipeKey = postSnapShot.getValue(String.class);
+                    recipeKeyKey = postSnapShot.getKey();
+
                     assembleRecipe(recipeKey);
                 }
-
-                mAdapter = new ImageAdapter(MyRecipesActivity.this, mUploads);
-                mRecyclerView.setAdapter(mAdapter);
-                mAdapter.setOnItemClickListener(MyRecipesActivity.this);
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -85,13 +94,10 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (task.isSuccessful()) {
                     Recipe recipe = task.getResult().getValue(Recipe.class);
+                    recipe.setKey(recipeKey);
                     mUploads.add(recipe);
-                    index++;
-                    mAdapter = new ImageAdapter(MyRecipesActivity.this, mUploads);
-                    mRecyclerView.setAdapter(mAdapter);
-                    mAdapter.setOnItemClickListener(MyRecipesActivity.this);
-                }
-                else {
+                    mAdapter.notifyDataSetChanged();
+                } else {
                     Toast.makeText(MyRecipesActivity.this, "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -118,6 +124,29 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
 
     @Override
     public void onDeleteClick(int position) {
-        Toast.makeText(this, "delete click at  position: " + position, Toast.LENGTH_SHORT).show();
+        if (this.recipeKeyKey == null) {
+            Toast.makeText(this, "We are sorry something went wrong", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Recipe selectedItem = mUploads.get(position);
+        String selectedKey = selectedItem.getKey();
+
+        StorageReference imageRef = mStorage.getReferenceFromUrl(selectedItem.getImageUrl());
+        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                recipesDBRef.child(selectedKey).removeValue();
+                String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+                usersDBRef.child(user).child("MyRecipes").child(recipeKeyKey).removeValue();
+                Toast.makeText(MyRecipesActivity.this, "Item deleted", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+        usersDBRef.child(user).child("MyRecipes").removeEventListener(mDBListener);
     }
 }
