@@ -21,16 +21,19 @@
             <menu>
                 <item
                     android:id="@+id/nav_login"
-                    android:icon="@drawable/login"
-                    android:title="Login"></item>
+                    android:title="Login"
+                    android:icon="@drawable/login">
+                </item>
                 <item
                     android:id="@+id/nav_profile"
-                    android:icon="@drawable/user"
-                    android:title="Profile"></item>
+                    android:title="Profile"
+                    android:icon="@drawable/user">
+                </item>
                 <item
                     android:id="@+id/nav_logout"
-                    android:icon="@drawable/ic_logout"
-                    android:title="LogOut"></item>
+                    android:title="LogOut"
+                    android:icon="@drawable/logout_icon">
+                </item>
             </menu>
         </item>
     </group>

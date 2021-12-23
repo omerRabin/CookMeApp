@@ -13,29 +13,36 @@
         android:theme="@style/Theme.CookMeApp">
         <activity
             android:name=".ShowRecipe"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true" />
         <activity
             android:name=".PersonalAreaActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
             android:parentActivityName=".DashboardActivity" />
         <activity
             android:name=".MyRecipesActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
             android:parentActivityName=".PersonalAreaActivity" />
         <activity
             android:name=".FavoriteRecipesActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
             android:parentActivityName=".PersonalAreaActivity" />
         <activity
             android:name=".UploadIngredientActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
             android:parentActivityName=".UploadRecipeActivity" />
         <activity
             android:name=".UploadRecipeActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
             android:parentActivityName=".DashboardActivity" />
         <activity
             android:name=".choose_for_recipe"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false"
             android:parentActivityName=".DashboardActivity" />
         <activity
@@ -50,7 +57,8 @@
         <activity
             android:name=".SignUpActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".DashboardActivity" />
+        <activity android:name=".DashboardActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <meta-data
             android:name="preloaded_fonts"
