@@ -16,27 +16,25 @@
             android:title="Upload Recipe"></item>
     </group>
 
-    <group android:checkableBehavior="single">
-        <item android:title="Profile">
-            <menu>
+
+    <item android:title="Profile">
+        <menu>
+            <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_login"
-                    android:title="Login"
-                    android:icon="@drawable/login">
-                </item>
+                    android:icon="@drawable/login"
+                    android:title="Login"></item>
                 <item
                     android:id="@+id/nav_profile"
-                    android:title="Profile"
-                    android:icon="@drawable/user">
-                </item>
+                    android:icon="@drawable/user"
+                    android:title="Profile"></item>
                 <item
                     android:id="@+id/nav_logout"
-                    android:title="LogOut"
-                    android:icon="@drawable/logout_icon">
-                </item>
-            </menu>
-        </item>
-    </group>
+                    android:icon="@drawable/logout_icon"
+                    android:title="LogOut"></item>
+            </group>
+        </menu>
+    </item>
 
 
 </menu>
