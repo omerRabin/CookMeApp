@@ -13,10 +13,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +34,9 @@ public class PersonalAreaActivity extends AppCompatActivity {
     private Button buttonSensitivity;
     private Button buttonMyRecipes;
     private Button buttonFavorites;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
     DatabaseReference sensitivities;
     ArrayList<String> data = new ArrayList<>();
     AlertDialog myDialog;
@@ -41,6 +48,13 @@ public class PersonalAreaActivity extends AppCompatActivity {
         this.buttonFavorites = findViewById(R.id.buttonFavorite);
         this.buttonMyRecipes = findViewById(R.id.buttonMyRecipes);
         this.buttonSensitivity = findViewById(R.id.buttonSensitivity);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
 
         this.buttonFavorites.setOnClickListener(new View.OnClickListener() {
             @Override

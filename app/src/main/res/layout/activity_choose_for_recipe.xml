@@ -9,8 +9,7 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
     android:gravity="center"
-    android:orientation="vertical">
-
+    android:orientation="vertical"
     tools:context=".choose_for_recipe">
 
     <com.google.android.material.navigation.NavigationView

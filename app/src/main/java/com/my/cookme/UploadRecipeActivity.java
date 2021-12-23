@@ -5,8 +5,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.MediaRouteButton;
 import android.content.ContentResolver;
@@ -32,6 +35,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,8 +56,10 @@ import java.util.Properties;
 
 public class UploadRecipeActivity extends AppCompatActivity {
 
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
     private static final int PICK_IMAGE_REQUEST = 1;
-
     private EditText editTextName;
     private EditText editTextDescription;
     private EditText editTextIngredients;
@@ -100,6 +106,13 @@ public class UploadRecipeActivity extends AppCompatActivity {
         this.buttonChooseImage = findViewById(R.id.button_choose_image);
         this.imageView = findViewById(R.id.imageView);
         this.imageUri = null;
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
         //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
         //if (!isAdmin())
 
