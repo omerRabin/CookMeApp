@@ -55,7 +55,7 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_recipes);
-        initializeMenu();
+        //initializeMenu();
         usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
         recipesDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
         mStorage = FirebaseStorage.getInstance();

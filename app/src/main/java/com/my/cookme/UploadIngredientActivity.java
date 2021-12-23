@@ -21,7 +21,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class UploadIngredientActivity extends AppCompatActivity {
 
@@ -38,6 +40,8 @@ public class UploadIngredientActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private Toolbar toolbar;
 
+    private List<String> autos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +50,8 @@ public class UploadIngredientActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
+
+        this.autos = new ArrayList<>();
 
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -115,6 +121,7 @@ public class UploadIngredientActivity extends AppCompatActivity {
 
                     for (String obj : objectHashMap.values()) {
                         content += obj + "\n";
+                        autos.add(obj);
                     }
                     textViewShowUpdates.setText(content);
                     Log.d("firebase", String.valueOf(task.getResult().getValue()));
