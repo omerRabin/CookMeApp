@@ -82,40 +82,15 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
     DatabaseReference adminsDbRef;
 
     StorageReference storageReference;
-    DatabaseReference databaseReference;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_recipe);
-        initializeMenu();
-        //Button buttonAddIngredient;
-        recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
-        ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
-        needToUpdate = FirebaseDatabase.getInstance().getReference().child("Update");
-        usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        adminsDbRef = FirebaseDatabase.getInstance().getReference().child("Admins");
 
-        storageReference = FirebaseStorage.getInstance().getReference("uploads");
-        databaseReference = FirebaseDatabase.getInstance().getReference("uploads");
-
-        this.editTextName = findViewById(R.id.editTextRecipeName);
-        this.editTextDescription = findViewById(R.id.editTextDescription);
-        this.editTextIngredients = findViewById(R.id.editTextIngredients);
-        this.editTextPreparationMethod = findViewById(R.id.editTextPreparationMethod);
-        this.buttonInsertData = findViewById(R.id.buttonInsertData);
-        this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
-        this.buttonChooseImage = findViewById(R.id.button_choose_image);
-        this.imageView = findViewById(R.id.imageView);
         this.imageUri = null;
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+
         //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
         //if (!isAdmin())
 
@@ -180,6 +155,46 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
 
 
         this.buttonChooseImage.setOnClickListener(v -> mgetContent.launch("image/*"));
+    }
+
+    private void initialize() {
+        initializeXmlElements();
+        initializeMenu();
+        initializeDatabaseObjects();
+    }
+
+    private void initializeDatabaseObjects() {
+        recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
+        ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
+        needToUpdate = FirebaseDatabase.getInstance().getReference().child("Update");
+        usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        adminsDbRef = FirebaseDatabase.getInstance().getReference().child("Admins");
+        storageReference = FirebaseStorage.getInstance().getReference("uploads");
+        //databaseReference = FirebaseDatabase.getInstance().getReference("uploads");
+    }
+
+    private void initializeMenu() {
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        navigationView.bringToFront();
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_upload_recipe);
+    }
+
+    private void initializeXmlElements() {
+        this.editTextName = findViewById(R.id.editTextRecipeName);
+        this.editTextDescription = findViewById(R.id.editTextDescription);
+        this.editTextIngredients = findViewById(R.id.editTextIngredients);
+        this.editTextPreparationMethod = findViewById(R.id.editTextPreparationMethod);
+        this.buttonInsertData = findViewById(R.id.buttonInsertData);
+        this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
+        this.buttonChooseImage = findViewById(R.id.button_choose_image);
+        this.imageView = findViewById(R.id.imageView);
     }
 
 
@@ -321,20 +336,6 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
             needToUpdate.push().setValue(s);
     }
 
-    private void initializeMenu() {
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toolbar = findViewById(R.id.toolbar);
-
-        setSupportActionBar(toolbar);
-        navigationView.bringToFront();
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setCheckedItem(R.id.nav_upload_recipe);
-    }
 
     @Override
     public void onBackPressed() {

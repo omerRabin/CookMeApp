@@ -47,24 +47,10 @@ public class UploadIngredientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_ingredient);
 
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toolbar = findViewById(R.id.toolbar);
+        initialize();
 
         this.autos = new ArrayList<>();
 
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
-        this.editTextName = findViewById(R.id.editTextIngredientName);
-        this.editTextCategory = findViewById(R.id.editTextCategory);
-        this.updateDBRef = FirebaseDatabase.getInstance().getReference().child("Update");
-        this.ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
-        this.buttonAdd = findViewById(R.id.ButtonAddIngredient);
-        this.buttonDelete = findViewById(R.id.buttondelete);
-        this.textViewShowUpdates = findViewById(R.id.showIngredientsTxt);
 
         this.buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +69,35 @@ public class UploadIngredientActivity extends AppCompatActivity {
 
 
         showNeededUpdates();
+    }
+
+    private void initialize() {
+        initializeXmlElements();
+        initializeMenu();
+        initializeDatabaseObjects();
+    }
+
+    private void initializeDatabaseObjects() {
+        this.updateDBRef = FirebaseDatabase.getInstance().getReference().child("Update");
+        this.ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
+    }
+
+    private void initializeMenu() {
+        this.drawerLayout = findViewById(R.id.drawer_layout);
+        this.navigationView = findViewById(R.id.nav_view);
+        this.toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    private void initializeXmlElements() {
+        this.editTextName = findViewById(R.id.editTextIngredientName);
+        this.editTextCategory = findViewById(R.id.editTextCategory);
+        this.buttonAdd = findViewById(R.id.ButtonAddIngredient);
+        this.buttonDelete = findViewById(R.id.buttondelete);
+        this.textViewShowUpdates = findViewById(R.id.showIngredientsTxt);
     }
 
     private void deleteUpdates() {
@@ -109,8 +124,7 @@ public class UploadIngredientActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     Log.e("firebase", "Error getting data", task.getException());
-                }
-                else {
+                } else {
                     String content = "";
                     HashMap<String, String> objectHashMap = (HashMap<String, String>) task.getResult().getValue(); // get all the missing ingredients
 
