@@ -115,6 +115,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_home);
     }
 
     @Override
@@ -128,6 +129,32 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.nav_home:
+                break;
+            case R.id.nav_cookme:
+                Intent intent = new Intent(DashboardActivity.this, choose_for_recipe.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_upload_recipe:
+                Intent intent1 = new Intent(DashboardActivity.this, UploadRecipeActivity.class);
+                startActivity(intent1);
+                break;
+            case R.id.nav_login:
+                Intent intent2 = new Intent(DashboardActivity.this, MainActivity.class);
+                startActivity(intent2);
+                break;
+            case R.id.nav_profile:
+                Intent intent3 = new Intent(DashboardActivity.this, PersonalAreaActivity.class);
+                startActivity(intent3);
+                break;
+            case R.id.nav_logout:
+                Intent intent4 = new Intent(DashboardActivity.this, MainActivity.class);
+                startActivity(intent4);
+                break;
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 }

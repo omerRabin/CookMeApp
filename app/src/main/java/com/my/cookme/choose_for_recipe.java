@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -16,6 +17,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.os.Bundle;
@@ -44,7 +46,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class choose_for_recipe extends AppCompatActivity {
+public class choose_for_recipe extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private Toolbar toolbar;
@@ -230,15 +232,64 @@ public class choose_for_recipe extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_for_recipe);
+        initializeMenu();
+
+        initializeViews();
+
+    }
+
+    private void initializeMenu() {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         toolbar = findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
+        navigationView.bringToFront();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        initializeViews();
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_cookme);
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.nav_home:
+                Intent intent0 = new Intent(choose_for_recipe.this, DashboardActivity.class);
+                startActivity(intent0);
+                break;
+            case R.id.nav_cookme:
+                break;
+            case R.id.nav_upload_recipe:
+                Intent intent1 = new Intent(choose_for_recipe.this, UploadRecipeActivity.class);
+                startActivity(intent1);
+                break;
+            case R.id.nav_login:
+                Intent intent2 = new Intent(choose_for_recipe.this, MainActivity.class);
+                startActivity(intent2);
+                break;
+            case R.id.nav_profile:
+                Intent intent3 = new Intent(choose_for_recipe.this, PersonalAreaActivity.class);
+                startActivity(intent3);
+                break;
+            case R.id.nav_logout:
+                Intent intent4 = new Intent(choose_for_recipe.this, MainActivity.class);
+                startActivity(intent4);
+                break;
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

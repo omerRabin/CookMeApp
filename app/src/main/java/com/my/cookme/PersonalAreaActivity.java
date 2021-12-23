@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,7 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class PersonalAreaActivity extends AppCompatActivity {
+public class PersonalAreaActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Button buttonSensitivity;
     private Button buttonMyRecipes;
     private Button buttonFavorites;
@@ -48,13 +50,7 @@ public class PersonalAreaActivity extends AppCompatActivity {
         this.buttonFavorites = findViewById(R.id.buttonFavorite);
         this.buttonMyRecipes = findViewById(R.id.buttonMyRecipes);
         this.buttonSensitivity = findViewById(R.id.buttonSensitivity);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        initializeMenu();
 
         this.buttonFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,5 +144,60 @@ public class PersonalAreaActivity extends AppCompatActivity {
 
         myDialog=myBuilder.create();
         myDialog.show();
+    }
+
+    private void initializeMenu() {
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nav_view);
+        toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+        navigationView.bringToFront();
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setCheckedItem(R.id.nav_profile);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.nav_home:
+                Intent intent = new Intent(PersonalAreaActivity.this, DashboardActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_cookme:
+                Intent intent0 = new Intent(PersonalAreaActivity.this, choose_for_recipe.class);
+                startActivity(intent0);
+                break;
+            case R.id.nav_upload_recipe:
+                Intent intent1 = new Intent(PersonalAreaActivity.this, UploadRecipeActivity.class);
+                startActivity(intent1);
+                break;
+            case R.id.nav_login:
+                Intent intent2 = new Intent(PersonalAreaActivity.this, MainActivity.class);
+                startActivity(intent2);
+                break;
+            case R.id.nav_profile:
+                break;
+            case R.id.nav_logout:
+                Intent intent4 = new Intent(PersonalAreaActivity.this, MainActivity.class);
+                startActivity(intent4);
+                break;
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
