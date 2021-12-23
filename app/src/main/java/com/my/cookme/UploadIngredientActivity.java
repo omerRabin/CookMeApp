@@ -35,7 +35,6 @@ public class UploadIngredientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_ingredient);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.editTextName = findViewById(R.id.editTextIngredientName);
         this.editTextCategory = findViewById(R.id.editTextCategory);
         this.updateDBRef = FirebaseDatabase.getInstance().getReference().child("Update");

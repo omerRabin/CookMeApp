@@ -81,7 +81,6 @@ public class UploadRecipeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_recipe);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //Button buttonAddIngredient;
         recipeDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
         ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
