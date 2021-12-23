@@ -46,7 +46,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-//import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -188,7 +188,7 @@ public class UploadRecipeActivity extends AppCompatActivity {
                     if (result != null) {
                         //imageView.setImageURI(result);
                         imageUri = result;
-                        //Picasso.with(UploadRecipeActivity.this).load(result).into(imageView);
+                        Picasso.with(UploadRecipeActivity.this).load(result).into(imageView);
                     }
                 }
             });

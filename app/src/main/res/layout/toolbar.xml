@@ -6,6 +6,7 @@
     android:background="@color/blue"
     app:navigationIcon="@drawable/menu_icon"
     android:elevation="4dp"
+
     >
 
 </androidx.appcompat.widget.Toolbar>

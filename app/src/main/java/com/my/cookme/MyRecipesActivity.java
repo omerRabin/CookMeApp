@@ -2,14 +2,10 @@ package com.my.cookme;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +15,6 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,9 +36,6 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
     DatabaseReference recipesDBRef;
     private List<Recipe> mUploads;
     private String recipeKeyKey;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
-    private Toolbar toolbar;
 
     private RecyclerView mRecyclerView;
     private ImageAdapter mAdapter;
@@ -55,13 +46,8 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_recipes);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("CookMe");
         usersDBRef = FirebaseDatabase.getInstance().getReference().child("Users");
         recipesDBRef = FirebaseDatabase.getInstance().getReference().child("Recipes");
         mStorage = FirebaseStorage.getInstance();
@@ -128,10 +114,7 @@ public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter
 
     @Override
     public void onItemClick(int position) {
-        Intent intent = new Intent(MyRecipesActivity.this, ShowRecipe.class);
-        Recipe selectedItem = mUploads.get(position);
-        intent.putExtra("recipe", selectedItem);
-        startActivity(intent);
+        Toast.makeText(this, "normal click at  position: " + position, Toast.LENGTH_SHORT).show();
     }
 
     @Override
