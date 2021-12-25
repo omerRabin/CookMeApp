@@ -89,6 +89,8 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_recipe);
 
+        initialize();
+
         this.imageUri = null;
 
         //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
