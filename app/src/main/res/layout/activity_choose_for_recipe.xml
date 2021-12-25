@@ -66,30 +66,6 @@
             app:layout_constraintTop_toBottomOf="@+id/mySpinner"
             app:layout_constraintVertical_bias="0.152" />
 
-        <Button
-            android:id="@+id/add_button"
-            android:layout_width="95dp"
-            android:layout_height="122dp"
-            android:text="@string/add_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.037"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.251" />
-
-        <Button
-            android:id="@+id/remove_button"
-            android:layout_width="96dp"
-            android:layout_height="117dp"
-            android:text="@string/remove_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.038"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.447" />
-
         <ImageButton
             android:id="@+id/cart"
             android:layout_width="113dp"
