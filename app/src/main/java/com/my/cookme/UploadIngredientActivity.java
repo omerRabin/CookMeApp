@@ -5,10 +5,15 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,8 +23,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,11 +34,12 @@ import java.util.List;
 
 public class UploadIngredientActivity extends AppCompatActivity {
 
-    private EditText editTextName;
+    private AutoCompleteTextView editTextName;
     private EditText editTextCategory;
     private Button buttonAdd;
     private TextView textViewShowUpdates;
     private Button buttonDelete;
+    private RecyclerView recyclerView;
 
     private DatabaseReference updateDBRef;
     private DatabaseReference ingredientDBRef;
@@ -40,31 +48,22 @@ public class UploadIngredientActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private Toolbar toolbar;
 
-    private List<String> autos;
+    private List<String> addIngredientsList;
+    private boolean firstTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_ingredient);
 
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toolbar = findViewById(R.id.toolbar);
+        this.addIngredientsList = new ArrayList<>();
 
-        this.autos = new ArrayList<>();
+        initialize();
+        setAdapter();
 
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
 
-        this.editTextName = findViewById(R.id.editTextIngredientName);
-        this.editTextCategory = findViewById(R.id.editTextCategory);
-        this.updateDBRef = FirebaseDatabase.getInstance().getReference().child("Update");
-        this.ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
-        this.buttonAdd = findViewById(R.id.ButtonAddIngredient);
-        this.buttonDelete = findViewById(R.id.buttondelete);
-        this.textViewShowUpdates = findViewById(R.id.showIngredientsTxt);
+
+
 
         this.buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +82,36 @@ public class UploadIngredientActivity extends AppCompatActivity {
 
 
         showNeededUpdates();
+    }
+
+    private void initialize() {
+        initializeXmlElements();
+        initializeMenu();
+        initializeDatabaseObjects();
+    }
+
+    private void initializeDatabaseObjects() {
+        this.updateDBRef = FirebaseDatabase.getInstance().getReference().child("Update");
+        this.ingredientDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
+    }
+
+    private void initializeMenu() {
+        this.drawerLayout = findViewById(R.id.drawer_layout);
+        this.navigationView = findViewById(R.id.nav_view);
+        this.toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    private void initializeXmlElements() {
+        this.recyclerView = findViewById(R.id.recycler_view_ingredients);
+        this.editTextName = findViewById(R.id.editTextIngredientName);
+        this.editTextCategory = findViewById(R.id.editTextCategory);
+        this.buttonAdd = findViewById(R.id.ButtonAddIngredient);
+        this.buttonDelete = findViewById(R.id.buttondelete);
+        this.textViewShowUpdates = findViewById(R.id.showIngredientsTxt);
     }
 
     private void deleteUpdates() {
@@ -104,29 +133,40 @@ public class UploadIngredientActivity extends AppCompatActivity {
 
     private void showNeededUpdates() {
 
-        updateDBRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, this.addIngredientsList);
+        editTextName.setAdapter(adapter);
+        firstTime = true;
+
+        updateDBRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                addIngredientsList.clear();
+                adapter.clear();
+                Toast.makeText(UploadIngredientActivity.this, "UPDATED", Toast.LENGTH_SHORT).show();
+                for (DataSnapshot postSnapShot : snapshot.getChildren()) {
+                    String ingredientValue = postSnapShot.getValue(String.class);
+                    addIngredientsList.add(ingredientValue);
+                    if (!firstTime)
+                        adapter.add(ingredientValue);
                 }
-                else {
-                    String content = "";
-                    HashMap<String, String> objectHashMap = (HashMap<String, String>) task.getResult().getValue(); // get all the missing ingredients
+                addIngredientsList.add("other");
+                if (!firstTime)
+                    adapter.add("other");
+                firstTime = false;
+            }
 
-                    if (objectHashMap == null) {
-                        textViewShowUpdates.setText("");
-                        return;
-                    }
-
-                    for (String obj : objectHashMap.values()) {
-                        content += obj + "\n";
-                        autos.add(obj);
-                    }
-                    textViewShowUpdates.setText(content);
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(UploadIngredientActivity.this, "We are sorry, something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setAdapter() {
+        recycleAdapter adapter = new recycleAdapter(this.addIngredientsList);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
     }
 }

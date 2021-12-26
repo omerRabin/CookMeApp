@@ -6,9 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:openDrawer="start">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,52 +26,51 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layout_constraintBottom_toTopOf="@+id/ButtonAddIngredient"
-                app:layout_constraintTop_toBottomOf="@+id/editTextCategory">
-
-                <AutoCompleteTextView
-                    android:id="@+id/autoComplete"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:completionHint="Ingredient Name"
-                    android:hint="Ingredient Name" />
-            </LinearLayout>
-
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
-                android:text="Add Ingredient"
+                android:paddingTop="50dp"
+                android:text="Add Ingredient To the Database"
+                android:textSize="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/toolbar" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/editTextIngredientName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="20dp"
-                android:ems="10"
-                android:hint="Ingredient Name"
-                android:inputType="textPersonName"
-                android:minHeight="48dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/rectangular_field"
+                android:completionThreshold="1"
+                android:hint="Ingredient's name"
+                android:inputType="textMultiLine"
+                android:paddingVertical="15dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textColor="#000000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
 
             <EditText
                 android:id="@+id/editTextCategory"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:ems="10"
-                android:hint="Category"
-                android:inputType="textPersonName"
-                android:minHeight="48dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/rectangular_field"
+                android:hint="Ingredient's category"
+                android:inputType="textMultiLine"
+                android:paddingVertical="15dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textColor="#000000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextIngredientName" />
@@ -105,6 +104,16 @@
                 app:layout_constraintEnd_toEndOf="@+id/showIngredientsTxt"
                 app:layout_constraintStart_toStartOf="@+id/showIngredientsTxt"
                 app:layout_constraintTop_toBottomOf="@+id/showIngredientsTxt" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/recycler_view_ingredients"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ButtonAddIngredient">
+
+            </androidx.recyclerview.widget.RecyclerView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
