@@ -105,6 +105,8 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
         mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, categories));
         myListView = findViewById(R.id.myListView);
         this.cart = (ImageButton) findViewById(R.id.cart);
+        ArrayAdapter<CosmicBody> a = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_multiple_choice, getCosmicBodies());
+        myListView.setAdapter(a);
         this.myListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         data.clear();
 
