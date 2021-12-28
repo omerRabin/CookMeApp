@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -56,7 +57,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-public class UploadRecipeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class UploadRecipeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -64,7 +65,8 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
     private static final int PICK_IMAGE_REQUEST = 1;
     private EditText editTextName;
     private EditText editTextDescription;
-    private EditText editTextIngredients;
+    private LinearLayout layoutList;
+    private Button buttonAdd;
     private EditText editTextPreparationMethod;
     private Button buttonInsertData;
     private Button buttonAddIngredient;
@@ -72,6 +74,7 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
     private Button buttonChooseImage;
     private ImageView imageView;
     private Uri imageUri;
+    private EditText editTextIngredients;
     public static boolean isAdmin = false;
 
 
@@ -83,6 +86,8 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
 
     StorageReference storageReference;
 
+    List<String> ingredientsList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +95,15 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
         setContentView(R.layout.activity_upload_recipe);
 
         initialize();
+        editTextIngredients = editTextDescription;
 
         this.imageUri = null;
+
+        this.buttonAdd.setOnClickListener(this);
+        ingredientsList.add("1");
+        ingredientsList.add("2");
+        ingredientsList.add("3");
+        ingredientsList.add("4");
 
         //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
         //if (!isAdmin())
@@ -191,12 +203,13 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
     private void initializeXmlElements() {
         this.editTextName = findViewById(R.id.editTextRecipeName);
         this.editTextDescription = findViewById(R.id.editTextDescription);
-        this.editTextIngredients = findViewById(R.id.editTextIngredients);
         this.editTextPreparationMethod = findViewById(R.id.editTextPreparationMethod);
         this.buttonInsertData = findViewById(R.id.buttonInsertData);
         this.buttonAddIngredient = findViewById(R.id.buttonGoAdd);
         this.buttonChooseImage = findViewById(R.id.button_choose_image);
         this.imageView = findViewById(R.id.imageView);
+        this.layoutList = findViewById(R.id.layout_list);
+        this.buttonAdd = findViewById(R.id.button_add);
     }
 
 
@@ -351,7 +364,7 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.nav_home:
                 Intent intent0 = new Intent(UploadRecipeActivity.this, DashboardActivity.class);
                 startActivity(intent0);
@@ -363,6 +376,7 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
             case R.id.nav_upload_recipe:
                 break;
             case R.id.nav_login:
+            case R.id.nav_logout:
                 Intent intent2 = new Intent(UploadRecipeActivity.this, MainActivity.class);
                 startActivity(intent2);
                 break;
@@ -370,12 +384,33 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
                 Intent intent3 = new Intent(UploadRecipeActivity.this, PersonalAreaActivity.class);
                 startActivity(intent3);
                 break;
-            case R.id.nav_logout:
-                Intent intent4 = new Intent(UploadRecipeActivity.this, MainActivity.class);
-                startActivity(intent4);
-                break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        addView();
+    }
+
+    private void addView() {
+        View ingredientView = getLayoutInflater().inflate(R.layout.row_add_ingredient, null, false);
+        EditText editText = (EditText)ingredientView.findViewById(R.id.edit_ingredient_name);
+        AppCompatSpinner spinner = (AppCompatSpinner)ingredientView.findViewById(R.id.spinner_team);
+        ImageView imageClose = (ImageView)ingredientView.findViewById(R.id.image_remove);
+        layoutList.addView(ingredientView);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, ingredientsList);
+        spinner.setAdapter(arrayAdapter);
+        imageClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeView(ingredientView);
+            }
+        });
+    }
+
+    private void removeView(View view) {
+        layoutList.removeView(view);
     }
 }

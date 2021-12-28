@@ -92,30 +92,39 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextRecipeName" />
 
-            <EditText
-                android:id="@+id/editTextIngredients"
+
+            <LinearLayout
+                android:id="@+id/layout_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
-                android:background="@drawable/rectangular_field"
-                android:hint="What do I need?"
-                android:inputType="textMultiLine"
-                android:paddingVertical="15dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:textColor="#000000"
+                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="@+id/editTextDescription"
                 app:layout_constraintStart_toStartOf="@+id/editTextDescription"
-                app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
+                app:layout_constraintTop_toBottomOf="@+id/editTextDescription">
+
+                <Button
+                    android:id="@+id/button_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:background="@drawable/round_primary"
+                    android:drawableRight="@drawable/ic_add"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="Add Ingredient"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
 
             <EditText
                 android:id="@+id/editTextPreparationMethod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/rectangular_field"
                 android:hint="How to cook?"
@@ -124,10 +133,10 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:textColor="#000000"
-                app:layout_constraintEnd_toEndOf="@+id/editTextIngredients"
-                app:layout_constraintStart_toStartOf="@+id/editTextIngredients"
-                app:layout_constraintTop_toBottomOf="@+id/editTextIngredients" />
-
+                app:layout_constraintEnd_toEndOf="@+id/editTextDescription"
+                app:layout_constraintHorizontal_bias="0.526"
+                app:layout_constraintStart_toStartOf="@+id/editTextDescription"
+                app:layout_constraintTop_toBottomOf="@+id/layout_list" />
 
             <Button
                 android:id="@+id/buttonGoAdd"
