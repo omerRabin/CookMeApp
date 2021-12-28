@@ -1,7 +1,6 @@
 package com.my.cookme;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -11,11 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,14 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.my.cookme.Adapters.ImageAdapter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
-public class MyRecipesActivity extends AppCompatActivity implements ImageAdapter.OnItemClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class MyRecipesActivity extends AppCompatActivity
+        implements ImageAdapter.OnItemClickListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
     DatabaseReference usersDBRef;
     DatabaseReference recipesDBRef;
