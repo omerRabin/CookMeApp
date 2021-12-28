@@ -80,7 +80,7 @@ public class UploadIngredientActivity extends AppCompatActivity
         this.buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteUpdates();
+                //deleteUpdates();
             }
         });
 
@@ -117,26 +117,24 @@ public class UploadIngredientActivity extends AppCompatActivity
         this.buttonDelete = findViewById(R.id.buttondelete);
     }
 
-    private void deleteUpdates() {
-        updateDBRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() { // deletes
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Toast.makeText(UploadIngredientActivity.this, "idk", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     private void insertIngredientData() {
         String name = editTextName.getText().toString();
         String category = editTextCategory.getText().toString();
         Ingredient i = new Ingredient(name, null, category);
-        ingredientDBRef.push().setValue(i);
-        Toast.makeText(UploadIngredientActivity.this, "UPLOADED", Toast.LENGTH_SHORT).show();
+        ingredientDBRef.push().setValue(i).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                deleteUpdateIngredient(name);
+                Toast.makeText(UploadIngredientActivity.this, "UPLOADED", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private void showNeededUpdates() {
 
-        ArrayAdapter<Pair<String, String>> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, this.addIngredientsList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
         editTextName.setAdapter(adapter);
         firstTime = true;
 
@@ -149,10 +147,9 @@ public class UploadIngredientActivity extends AppCompatActivity
                 for (DataSnapshot postSnapShot : snapshot.getChildren()) {
                     String ingredientValue = postSnapShot.getValue(String.class);
                     String ingredientKey = postSnapShot.getKey();
-                    Pair<String, String> pair =new Pair<>(ingredientKey, ingredientValue);
+                    Pair<String, String> pair = new Pair<>(ingredientKey, ingredientValue);
                     addIngredientsList.add(pair);
-                    if (!firstTime)
-                        adapter.add(pair);
+                    adapter.add(pair.second);
                     //rAdapter.notifyDataSetChanged();
                 }
                 if (firstTime)
@@ -178,12 +175,23 @@ public class UploadIngredientActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(int position) {
-        Pair<String, String> pair = addIngredientsList.get(position);
-        updateDBRef.child(pair.first).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Toast.makeText(UploadIngredientActivity.this, pair.second + " has been removed from the updates list", Toast.LENGTH_SHORT).show();
+        deleteUpdateIngredient(addIngredientsList.get(position).second);
+    }
+
+    private ArrayList<Pair<String, String>> getIngredientsByTheSameName(String ingredient) {
+        ArrayList<Pair<String, String>> temp = new ArrayList<>();
+        for (int i = 0; i < addIngredientsList.size(); i++) {
+            if (ingredient.equals(addIngredientsList.get(i).second)) {
+                temp.add(addIngredientsList.get(i));
             }
-        });
+        }
+        return temp;
+    }
+
+    private void deleteUpdateIngredient(String ingredient) {
+        ArrayList<Pair<String, String>> temp = getIngredientsByTheSameName(ingredient);
+        for (int i = 0; i < temp.size(); i++) {
+            updateDBRef.child(temp.get(i).first).removeValue();
+        }
     }
 }
