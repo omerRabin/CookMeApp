@@ -194,4 +194,6 @@ public class UploadIngredientActivity extends AppCompatActivity
             updateDBRef.child(temp.get(i).first).removeValue();
         }
     }
+
+
 }

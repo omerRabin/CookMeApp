@@ -25,6 +25,7 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -86,7 +87,6 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
 
     StorageReference storageReference;
 
-    List<String> ingredientsList = new ArrayList<>();
 
 
     @Override
@@ -100,10 +100,6 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
         this.imageUri = null;
 
         this.buttonAdd.setOnClickListener(this);
-        ingredientsList.add("1");
-        ingredientsList.add("2");
-        ingredientsList.add("3");
-        ingredientsList.add("4");
 
         //this.buttonAddIngredient.setVisibility(View.INVISIBLE);
         //if (!isAdmin())
@@ -122,10 +118,10 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ingredients_db.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    HashMap<String, String> object = (HashMap<String, String>) dataSnapshot.getValue();
-                    Ingredient i = new Ingredient(object.get("name"), null, object.get("category"));
+                    Ingredient i = dataSnapshot.getValue(Ingredient.class);
                     ingredients_db.add(i); // adding them to a list
                 }
+                buttonAdd.setEnabled(true);
             }
 
             @Override
@@ -247,12 +243,12 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
                     String ingredients = editTextIngredients.getText().toString();
                     String preparationMethod = editTextPreparationMethod.getText().toString();
                     String[] lines = ingredients.split("\n"); // every line is a different ingredient
-                    List<Ingredient> ingredientList = new ArrayList<>();
+                    List<Ingredient> ingredientList = getIngredientsValues();
 
                     ArrayList<String> missingIngredients = new ArrayList<>();
 
 
-                    for (String line : lines) { // checking if some ingredients do not exist in our db
+                    /*for (String line : lines) { // checking if some ingredients do not exist in our db
                         boolean flag = false;
                         for (Ingredient ing : ingredients_db) {
                             if (line.toLowerCase().contains(ing.getName())) {
@@ -264,7 +260,7 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
                             missingIngredients.add(line);
                             ingredientList.add(new Ingredient(line, line, "Unknown"));
                         }
-                    }
+                    }*/
 
                     fileReference.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
@@ -273,15 +269,15 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
                             Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
                                     recipeName, ingredientList, description, preparationMethod, url); // creating a new recipe
 
-                            boolean flag = false;
+                            /*boolean flag = false;
                             if (missingIngredients.size() > 0) {
                                 showPopupIngredient(missingIngredients, recipe);
                                 flag = true;
-                            }
+                            }*/
 
-                            if (flag == false) {
+                            //if (flag == false) {
                                 pushRecipe(recipe);
-                            }
+                            //}
 
                         }
                     });
@@ -396,12 +392,16 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
 
     private void addView() {
         View ingredientView = getLayoutInflater().inflate(R.layout.row_add_ingredient, null, false);
-        EditText editText = (EditText)ingredientView.findViewById(R.id.edit_ingredient_name);
-        AppCompatSpinner spinner = (AppCompatSpinner)ingredientView.findViewById(R.id.spinner_team);
+        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView)ingredientView.findViewById(R.id.spinner_team);
         ImageView imageClose = (ImageView)ingredientView.findViewById(R.id.image_remove);
         layoutList.addView(ingredientView);
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, ingredientsList);
-        spinner.setAdapter(arrayAdapter);
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (Ingredient i : ingredients_db) {
+            arrayList.add(i.getName());
+        }
+        arrayList.add("other");
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, arrayList);
+        autoCompleteTextView.setAdapter(arrayAdapter);
         imageClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -412,5 +412,47 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
 
     private void removeView(View view) {
         layoutList.removeView(view);
+    }
+
+    private ArrayList<Ingredient> getIngredientsValues() {
+        ArrayList<Ingredient> stringArrayList = new ArrayList<>();
+        for (int i =0; i < layoutList.getChildCount(); i++) {
+            View ingredientView = layoutList.getChildAt(i);
+            EditText editTextName = (EditText)ingredientView.findViewById(R.id.edit_ingredient_name);
+            AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView)ingredientView.findViewById(R.id.spinner_team);
+
+            Ingredient ingredient = new Ingredient(null, null, null);
+
+            if (!autoCompleteTextView.getText().toString().equals("")) {
+                ingredient.setName(autoCompleteTextView.getText().toString());
+            }
+            else {
+                Toast.makeText(this, "We are sorry, something went wrong with the ingredients", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            if (!editTextName.getText().toString().equals("")) {
+                ingredient.setDescription(editTextName.getText().toString());
+            }
+
+            String category =findCategoryByIngredientName(ingredient.getName());
+            if (category == null) {
+                Toast.makeText(this, "Something went wrong, please try again later", Toast.LENGTH_SHORT).show();
+                return null;
+            }
+            else {
+                ingredient.setCategory(category);
+            }
+            stringArrayList.add(ingredient);
+        }
+        return stringArrayList;
+    }
+
+    private String findCategoryByIngredientName(String name) {
+        for (Ingredient ing : ingredients_db) {
+            if (ing.getName().equals(name))
+                return ing.getCategory();
+        }
+        return null;
     }
 }
