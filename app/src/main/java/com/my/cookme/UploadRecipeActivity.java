@@ -20,8 +20,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -86,7 +88,6 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
     DatabaseReference adminsDbRef;
 
     StorageReference storageReference;
-
 
 
     @Override
@@ -245,22 +246,12 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
                     String[] lines = ingredients.split("\n"); // every line is a different ingredient
                     List<Ingredient> ingredientList = getIngredientsValues();
 
+                    if (ingredientList == null) {
+                        Toast.makeText(UploadRecipeActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     ArrayList<String> missingIngredients = new ArrayList<>();
-
-
-                    /*for (String line : lines) { // checking if some ingredients do not exist in our db
-                        boolean flag = false;
-                        for (Ingredient ing : ingredients_db) {
-                            if (line.toLowerCase().contains(ing.getName())) {
-                                ingredientList.add(new Ingredient(ing.getName(), line, ing.getCategory()));
-                                flag = true;
-                            }
-                        }
-                        if (flag == false) {
-                            missingIngredients.add(line);
-                            ingredientList.add(new Ingredient(line, line, "Unknown"));
-                        }
-                    }*/
 
                     fileReference.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
@@ -269,15 +260,13 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
                             Recipe recipe = new Recipe(FirebaseAuth.getInstance().getCurrentUser().getEmail(),
                                     recipeName, ingredientList, description, preparationMethod, url); // creating a new recipe
 
-                            /*boolean flag = false;
-                            if (missingIngredients.size() > 0) {
-                                showPopupIngredient(missingIngredients, recipe);
-                                flag = true;
-                            }*/
 
-                            //if (flag == false) {
-                                pushRecipe(recipe);
-                            //}
+                            for (Ingredient ingredient : ingredientList) {
+                                if (ingredient.getName().equals("other"))
+                                    missingIngredients.add(ingredient.getDescription());
+                            }
+                            pushRecipe(recipe);
+                            pushMissingIngredients(missingIngredients);
 
                         }
                     });
@@ -297,38 +286,17 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
     }
 
 
-    private void showPopupIngredient(List<String> missingIngredients, Recipe recipe) {
+    private void showPopup(String content, String title) {
         AlertDialog.Builder builder = new AlertDialog.Builder(UploadRecipeActivity.this); // creating a popup dialog
-        builder.setCancelable(true);
-        builder.setTitle("We have noticed some ingredients doesn't show up on our database!");
-        String popupContent = missingIngredients.get(0) + "\n";
-        for (int i = 1; i < missingIngredients.size(); i++) {
-            popupContent += missingIngredients.get(i);
-            if (i != missingIngredients.size() - 1)
-                popupContent += "\n";
-        }
-        builder.setMessage("The following lines describe ingredients that do not exist in our database:\n\n" +
-                popupContent + "\n\nPlease check if you don't have a typo.\nIf you are sure everything is ok help us to update out database. ");
+        builder.setCancelable(false);
+        builder.setTitle(title);
 
-        builder.setNegativeButton("cancel, let me fix", new DialogInterface.OnClickListener() {
+        builder.setMessage(content);
+
+        builder.setPositiveButton("ok, I understand", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
-            }
-        });
-
-        final String content = popupContent;
-        builder.setPositiveButton("ok, send", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                if (recipe != null) {
-                    pushRecipe(recipe);
-                }
-
-                Toast.makeText(UploadRecipeActivity.this, "A request to update our database has been sent to one of our admins", Toast.LENGTH_LONG).show();
-                sendUpdate(missingIngredients);
-                //relativeLayoutPopup.setVisibility(View.VISIBLE);
             }
         });
         builder.show();
@@ -339,6 +307,12 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
         recipeDBRef.child(uniqueKey).setValue(recipe);
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
         usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
+    }
+
+    private void pushMissingIngredients(List<String> list) {
+        for (String ingredient : list) {
+            needToUpdate.push().setValue(ingredient);
+        }
     }
 
     private void sendUpdate(List<String> missingIngredients) {
@@ -392,8 +366,8 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
 
     private void addView() {
         View ingredientView = getLayoutInflater().inflate(R.layout.row_add_ingredient, null, false);
-        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView)ingredientView.findViewById(R.id.spinner_team);
-        ImageView imageClose = (ImageView)ingredientView.findViewById(R.id.image_remove);
+        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) ingredientView.findViewById(R.id.spinner_team);
+        ImageView imageClose = (ImageView) ingredientView.findViewById(R.id.image_remove);
         layoutList.addView(ingredientView);
         ArrayList<String> arrayList = new ArrayList<>();
         for (Ingredient i : ingredients_db) {
@@ -408,6 +382,31 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
                 removeView(ingredientView);
             }
         });
+
+        autoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    if (arrayAdapter.getCount() < 1) {
+                        autoCompleteTextView.setError("No such ingredient");
+                        showPopup(autoCompleteTextView.getText().toString() + " does not exist in our database." +
+                                "\nPlease make sure that you typed everything right." +
+                                "\nIf your ingredient does not exist in our database, choose \"other\" as ingredient and write your ingredient in the \"description\"." +
+                                "\n a request will be sent to our admin to add the ingredient to our database.", "Ingredient missing");
+                        autoCompleteTextView.setText("");
+                    } else {
+                        if (((String) arrayAdapter.getItem(0)).equals(autoCompleteTextView.getText().toString()) == false) {
+                            autoCompleteTextView.setError("No such ingredient");
+                            showPopup(autoCompleteTextView.getText().toString() + " does not exist in our database." +
+                                    "\nPlease make sure that you typed everything right." +
+                                    "\nIf your ingredient does not exist in our database, choose \"other\" as ingredient and write your ingredient in the \"description\"." +
+                                    "\n a request will be sent to our admin to add the ingredient to our database.", "Ingredient missing");
+                            autoCompleteTextView.setText("");
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void removeView(View view) {
@@ -416,17 +415,16 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
 
     private ArrayList<Ingredient> getIngredientsValues() {
         ArrayList<Ingredient> stringArrayList = new ArrayList<>();
-        for (int i =0; i < layoutList.getChildCount(); i++) {
+        for (int i = 0; i < layoutList.getChildCount(); i++) {
             View ingredientView = layoutList.getChildAt(i);
-            EditText editTextName = (EditText)ingredientView.findViewById(R.id.edit_ingredient_name);
-            AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView)ingredientView.findViewById(R.id.spinner_team);
+            EditText editTextName = (EditText) ingredientView.findViewById(R.id.edit_ingredient_name);
+            AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) ingredientView.findViewById(R.id.spinner_team);
 
             Ingredient ingredient = new Ingredient(null, null, null);
 
             if (!autoCompleteTextView.getText().toString().equals("")) {
                 ingredient.setName(autoCompleteTextView.getText().toString());
-            }
-            else {
+            } else {
                 Toast.makeText(this, "We are sorry, something went wrong with the ingredients", Toast.LENGTH_SHORT).show();
                 return null;
             }
@@ -435,12 +433,11 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
                 ingredient.setDescription(editTextName.getText().toString());
             }
 
-            String category =findCategoryByIngredientName(ingredient.getName());
+            String category = findCategoryByIngredientName(ingredient.getName());
             if (category == null) {
                 Toast.makeText(this, "Something went wrong, please try again later", Toast.LENGTH_SHORT).show();
                 return null;
-            }
-            else {
+            } else {
                 ingredient.setCategory(category);
             }
             stringArrayList.add(ingredient);
@@ -449,6 +446,9 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
     }
 
     private String findCategoryByIngredientName(String name) {
+        if (name.equals("other"))
+            return "other";
+
         for (Ingredient ing : ingredients_db) {
             if (ing.getName().equals(name))
                 return ing.getCategory();
