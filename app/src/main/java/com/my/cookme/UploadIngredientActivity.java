@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -19,25 +20,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.my.cookme.Adapters.IngredientsAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class UploadIngredientActivity extends AppCompatActivity {
+public class UploadIngredientActivity extends AppCompatActivity
+        implements IngredientsAdapter.OnIngredientClickListener {
 
     private AutoCompleteTextView editTextName;
     private EditText editTextCategory;
     private Button buttonAdd;
-    private TextView textViewShowUpdates;
     private Button buttonDelete;
     private RecyclerView recyclerView;
 
@@ -48,8 +54,9 @@ public class UploadIngredientActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private Toolbar toolbar;
 
-    private List<String> addIngredientsList;
+    private ArrayList<Pair<String, String>> addIngredientsList;
     private boolean firstTime;
+    private IngredientsAdapter rAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +66,8 @@ public class UploadIngredientActivity extends AppCompatActivity {
         this.addIngredientsList = new ArrayList<>();
 
         initialize();
-        setAdapter();
-
-
-
+        rAdapter = new IngredientsAdapter(UploadIngredientActivity.this);
+        rAdapter.setOnIngredientClickListener(this);
 
 
         this.buttonAdd.setOnClickListener(new View.OnClickListener() {
@@ -75,8 +80,7 @@ public class UploadIngredientActivity extends AppCompatActivity {
         this.buttonDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textViewShowUpdates.setText("");
-                deleteUpdates();
+                //deleteUpdates();
             }
         });
 
@@ -111,29 +115,26 @@ public class UploadIngredientActivity extends AppCompatActivity {
         this.editTextCategory = findViewById(R.id.editTextCategory);
         this.buttonAdd = findViewById(R.id.ButtonAddIngredient);
         this.buttonDelete = findViewById(R.id.buttondelete);
-        this.textViewShowUpdates = findViewById(R.id.showIngredientsTxt);
     }
 
-    private void deleteUpdates() {
-        updateDBRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() { // deletes
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Toast.makeText(UploadIngredientActivity.this, "idk", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 
     private void insertIngredientData() {
         String name = editTextName.getText().toString();
         String category = editTextCategory.getText().toString();
         Ingredient i = new Ingredient(name, null, category);
-        ingredientDBRef.push().setValue(i);
-        Toast.makeText(UploadIngredientActivity.this, "UPLOADED", Toast.LENGTH_SHORT).show();
+        ingredientDBRef.push().setValue(i).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                deleteUpdateIngredient(name);
+                Toast.makeText(UploadIngredientActivity.this, "UPLOADED", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private void showNeededUpdates() {
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, this.addIngredientsList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
         editTextName.setAdapter(adapter);
         firstTime = true;
 
@@ -145,13 +146,17 @@ public class UploadIngredientActivity extends AppCompatActivity {
                 Toast.makeText(UploadIngredientActivity.this, "UPDATED", Toast.LENGTH_SHORT).show();
                 for (DataSnapshot postSnapShot : snapshot.getChildren()) {
                     String ingredientValue = postSnapShot.getValue(String.class);
-                    addIngredientsList.add(ingredientValue);
-                    if (!firstTime)
-                        adapter.add(ingredientValue);
+                    String ingredientKey = postSnapShot.getKey();
+                    Pair<String, String> pair = new Pair<>(ingredientKey, ingredientValue);
+                    addIngredientsList.add(pair);
+                    adapter.add(pair.second);
+                    //rAdapter.notifyDataSetChanged();
                 }
-                addIngredientsList.add("other");
-                if (!firstTime)
-                    adapter.add("other");
+                if (firstTime)
+                    setAdapter(rAdapter);
+                else
+                    rAdapter.setIngredients(addIngredientsList);
+
                 firstTime = false;
             }
 
@@ -162,11 +167,33 @@ public class UploadIngredientActivity extends AppCompatActivity {
         });
     }
 
-    private void setAdapter() {
-        recycleAdapter adapter = new recycleAdapter(this.addIngredientsList);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+    private void setAdapter(IngredientsAdapter adapter) {
+        adapter.setIngredients(this.addIngredientsList);
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new FlexboxLayoutManager(this));
     }
+
+    @Override
+    public void onItemClick(int position) {
+        deleteUpdateIngredient(addIngredientsList.get(position).second);
+    }
+
+    private ArrayList<Pair<String, String>> getIngredientsByTheSameName(String ingredient) {
+        ArrayList<Pair<String, String>> temp = new ArrayList<>();
+        for (int i = 0; i < addIngredientsList.size(); i++) {
+            if (ingredient.equals(addIngredientsList.get(i).second)) {
+                temp.add(addIngredientsList.get(i));
+            }
+        }
+        return temp;
+    }
+
+    private void deleteUpdateIngredient(String ingredient) {
+        ArrayList<Pair<String, String>> temp = getIngredientsByTheSameName(ingredient);
+        for (int i = 0; i < temp.size(); i++) {
+            updateDBRef.child(temp.get(i).first).removeValue();
+        }
+    }
+
+
 }
