@@ -119,7 +119,10 @@ public class MyRecipesActivity extends AppCompatActivity
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(this, "normal click at  position: " + position, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MyRecipesActivity.this, ShowRecipe.class);
+        Recipe selectedItem = mUploads.get(position);
+        intent.putExtra("recipe", selectedItem);
+        startActivity(intent);
     }
 
     @Override
@@ -195,16 +198,13 @@ public class MyRecipesActivity extends AppCompatActivity
                 startActivity(intent1);
                 break;
             case R.id.nav_login:
+            case R.id.nav_logout:
                 Intent intent2 = new Intent(MyRecipesActivity.this, MainActivity.class);
                 startActivity(intent2);
                 break;
             case R.id.nav_profile:
                 Intent intent3 = new Intent(MyRecipesActivity.this, PersonalAreaActivity.class);
                 startActivity(intent3);
-                break;
-            case R.id.nav_logout:
-                Intent intent4 = new Intent(MyRecipesActivity.this, MainActivity.class);
-                startActivity(intent4);
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
