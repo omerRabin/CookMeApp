@@ -12,39 +12,42 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CookMeApp">
         <activity
+            android:name=".search_recipes"
+            android:exported="false" />
+        <activity
             android:name=".ShowRecipe"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".PersonalAreaActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
-            android:parentActivityName=".DashboardActivity" />
+            android:parentActivityName=".DashboardActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".MyRecipesActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:exported="true"
-            android:parentActivityName=".PersonalAreaActivity" />
+            android:parentActivityName=".PersonalAreaActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".FavoriteRecipesActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
-            android:parentActivityName=".PersonalAreaActivity" />
+            android:parentActivityName=".PersonalAreaActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".UploadIngredientActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
-            android:parentActivityName=".UploadRecipeActivity" />
+            android:parentActivityName=".UploadRecipeActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".UploadRecipeActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true"
-            android:parentActivityName=".DashboardActivity" />
+            android:parentActivityName=".DashboardActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".choose_for_recipe"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false"
-            android:parentActivityName=".DashboardActivity" />
+            android:parentActivityName=".DashboardActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -57,8 +60,9 @@
         <activity
             android:name=".SignUpActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".DashboardActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity
+            android:name=".DashboardActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <meta-data
             android:name="preloaded_fonts"

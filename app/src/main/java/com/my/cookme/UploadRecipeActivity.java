@@ -236,8 +236,6 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
             fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    //taskSnapshot.getMetadata().getReference().getDownloadUrl().toString()
-                    //Toast.makeText(UploadRecipeActivity.this, taskSnapshot.getMetadata().getReference().getDownloadUrl().toString(), Toast.LENGTH_LONG).show();
 
                     String recipeName = editTextName.getText().toString();
                     String description = editTextDescription.getText().toString();

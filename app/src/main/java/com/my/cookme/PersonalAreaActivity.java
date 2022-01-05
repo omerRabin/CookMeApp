@@ -73,14 +73,12 @@ public class PersonalAreaActivity extends AppCompatActivity implements Navigatio
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     Log.e("firebase", "Error getting data", task.getException());
-                    Toast.makeText(PersonalAreaActivity.this, "tzumi", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PersonalAreaActivity.this, "error getting data", Toast.LENGTH_SHORT).show();
 
                 } else {
 
                     Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    //Toast.makeText(choose_for_recipe.this, "yoel", Toast.LENGTH_SHORT).show();
                     HashMap<String, Object> o = (HashMap<String, Object>) (task.getResult().getValue());
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
 
                     ArrayList<Object> l1 = new ArrayList<>();
                     for (Object obj : o.values()) {
@@ -141,7 +139,6 @@ public class PersonalAreaActivity extends AppCompatActivity implements Navigatio
                 }
             }
         });
-
         myDialog=myBuilder.create();
         myDialog.show();
     }

@@ -115,11 +115,11 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 if (position > 0 && position < categories.length) { // here i will create and insert into a list of ingredients
-                    Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
                     getSelectedCategoryData(position);
-                    Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(choose_for_recipe.this, "selected category doesnt exist!", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(choose_for_recipe.this, "selected category doesnt exist!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -129,7 +129,6 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
             }
         });
         this.myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CheckedTextView v = (CheckedTextView) view;
@@ -147,14 +146,13 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
         });
         //
 
-        cart.setOnClickListener(new View.OnClickListener() { // here i need to take all what he choose and let him fix or continue to the next activity
+        cart.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(choose_for_recipe.this);
                 builder.setCancelable(true);
                 String pop_up_content = "Selected Ingredients :" + String.join(", ", choose_for_recipe.cart_list);
-                //String pop_up_content = "Selected items are: "+sb.toString();
                 builder.setTitle("Your Cart");
                 builder.setMessage(pop_up_content);
                 builder.setNegativeButton("exit", new DialogInterface.OnClickListener() {
@@ -198,58 +196,41 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (!task.isSuccessful()) {
                     Log.e("firebase", "Error getting data", task.getException());
-                    Toast.makeText(choose_for_recipe.this, "tzumi", Toast.LENGTH_SHORT).show();
-
                 } else {
-
                     Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    //Toast.makeText(choose_for_recipe.this, "yoel", Toast.LENGTH_SHORT).show();
                     HashMap<String, Object> o = (HashMap<String, Object>) (task.getResult().getValue());
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
                     ArrayList<Object> l1 = new ArrayList<>();
-                    for (Object obj : o.values()) {
-                        l1.add(obj);
-                    }
+                    for (Object obj : o.values()) { l1.add(obj); }
                     ArrayList<HashMap<String, String>> l1_convert = new ArrayList<>();
                     for (Object x : l1) {
-                        l1_convert.add((HashMap<String, String>) x);
-                    }
-
+                        l1_convert.add((HashMap<String, String>) x); }
                     for (int i = 0; i < l1_convert.size(); i++) {
                         String name = l1_convert.get(i).get("name");
                         String category = l1_convert.get(i).get("category");
-
                         boolean flag = true;
                         for(int j=0;j<data.size();j++){
                             if(data.get(j).getName().equals(name)){
                                 flag= false;
-                                break;
-                            }
+                                break; }
                         }
                         if (flag) {
-                            Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
-                            data.add(new CosmicBody(name, category, false));
-                        }
+                            data.add(new CosmicBody(name, category, false)); }
                     }
                 }
             }
         });
-
         return data;
     }
     private void getSelectedCategoryData(int categoryID) {
         ArrayList<CosmicBody> cosmicBodies = new ArrayList<>();
         cosmicBodies.clear();
 
-        Toast.makeText(choose_for_recipe.this, "tzumi", Toast.LENGTH_SHORT).show();
         if (categoryID == 0) {
             adapter = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_checked, getCosmicBodies());
         } else {
 
             for (CosmicBody cosmicBody : getCosmicBodies()) {
-                Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
                 if (cosmicBody.getCategoryID() == categoryID) {
-                    Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
                     cosmicBodies.add(cosmicBody);
                 }
             }
