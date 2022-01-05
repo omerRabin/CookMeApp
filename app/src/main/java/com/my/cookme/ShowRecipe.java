@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import com.my.cookme.Adapters.ImageAdapter;
@@ -20,6 +23,9 @@ public class ShowRecipe extends AppCompatActivity {
     private EditText editTextIngredients;
     private EditText editTextPrep;
     private ImageView imageView;
+    private TextView likes;
+
+    private DatabaseReference databaseReferenceRecipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +34,8 @@ public class ShowRecipe extends AppCompatActivity {
 
         initializeXmlElements();
         Recipe recipe = (Recipe) getIntent().getSerializableExtra("recipe");
+        databaseReferenceRecipe = FirebaseDatabase.getInstance().getReference().child("Recipes").child(recipe.getKey());
         showRecipe(recipe);
-
     }
 
     private void initializeXmlElements() {
@@ -38,6 +44,7 @@ public class ShowRecipe extends AppCompatActivity {
         this.editTextIngredients = findViewById(R.id.editTextIngredients);
         this.editTextPrep = findViewById(R.id.editTextPreparationMethod);
         this.imageView = findViewById(R.id.imageView2);
+        this.likes = findViewById(R.id.likes);
     }
 
     private void showRecipe(Recipe recipe) {
@@ -54,6 +61,6 @@ public class ShowRecipe extends AppCompatActivity {
         this.editTextIngredients.setText(ingredients);
         this.editTextPrep.setText(recipe.getPreparationMethod());
         Picasso.with(this).load(Uri.parse(recipe.getImageUrl())).into(imageView);
-        //Picasso.with(this).load(recipe.getImageUrl()).fit().centerCrop().into(this.imageView);
+        this.likes.setText(recipe.getLikesNumber() - 1 + " likes");
     }
 }

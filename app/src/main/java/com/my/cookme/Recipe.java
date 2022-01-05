@@ -1,6 +1,12 @@
 package com.my.cookme;
 
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +24,7 @@ public class Recipe implements Serializable {
     //private String recipeID;
     private String ownerID;
     private String name;
-    private int likesNumber;
+    private List<Like> likes;
     private String uploadDate;
     private List<Ingredient> ingredients;
     private String description;
@@ -33,12 +40,13 @@ public class Recipe implements Serializable {
         this.preparationMethod = preparationMethod;
         Date date = new Date();
         this.uploadDate = formatter.format(date);
-        this.likesNumber = 0;
+        this.likes = new ArrayList<>();
+        this.likes.add(new Like(ownerID, "12"));
         this.imageUrl = imageUrl;
     }
 
     public Recipe() {
-
+        this.likes = new ArrayList<>();
     }
 
     @Exclude
@@ -49,6 +57,27 @@ public class Recipe implements Serializable {
     @Exclude
     public void setKey(String mKey) {
         this.mKey = mKey;
+    }
+
+    @Exclude
+    public int getLikesNumber() {
+        return this.likes.size();
+    }
+
+    @Exclude
+    public void addLike(Like like) {
+        this.likes.add(like);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Recipes").child(like.getRecipeKey()).child("likes");
+        databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+
+                databaseReference.setValue(likes);
+                String username = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+                DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference().child("Users").child(username).child("likedRecipes");
+                databaseReference1.push().setValue(like);
+            }
+        });
     }
 
     public String getImageUrl() {
@@ -83,12 +112,12 @@ public class Recipe implements Serializable {
         this.name = name;
     }
 
-    public int getLikesNumber() {
-        return likesNumber;
+    public List<Like> getLikes() {
+        return likes;
     }
 
-    public void setLikesNumber(int likesNumber) {
-        this.likesNumber = likesNumber;
+    public void setLikes(List<Like> likesNumber) {
+        this.likes = likesNumber;
     }
 
     public String getUploadDate() {
@@ -122,22 +151,4 @@ public class Recipe implements Serializable {
     public void setPreparationMethod(String preparationMethod) {
         this.preparationMethod = preparationMethod;
     }
-
-    /*public static byte[] serialize(Recipe recipe) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(recipe);
-        oos.flush();
-        return bos.toByteArray();
-        /*ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(recipe);
-        return out.toByteArray();
-    }
-
-    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream in = new ByteArrayInputStream(data);
-        ObjectInputStream is = new ObjectInputStream(in);
-        return is.readObject();
-    }*/
 }
