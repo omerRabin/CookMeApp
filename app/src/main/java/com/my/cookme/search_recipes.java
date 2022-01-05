@@ -86,7 +86,7 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
                     for (HashMap h : o.values()) {
                         l1.add(h);
                     }
-  //List<Ingredient> ingredients, String description, String preparationMethod, String imageUrl
+                    //List<Ingredient> ingredients, String description, String preparationMethod, String imageUrl
                     ArrayList<Recipe> l2 = new ArrayList<>(); // list of recipes after convert
                     for (int i = 0; i < l1.size(); i++) {
                         String id = (String) l1.get(i).get("ownerID");
@@ -148,31 +148,31 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
         });
         */
     }
-/*
-    private void assembleRecipe(String recipeKey) {
-        recipesDBRef.child(recipeKey).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (task.isSuccessful()) {
-                    Recipe recipe = task.getResult().getValue(Recipe.class);
-                    recipe.setKey(recipeKey);
-                    mUploads.add(recipe);
-                    mAdapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(search_recipes.this, "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
+    /*
+        private void assembleRecipe(String recipeKey) {
+            recipesDBRef.child(recipeKey).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        Recipe recipe = task.getResult().getValue(Recipe.class);
+                        recipe.setKey(recipeKey);
+                        mUploads.add(recipe);
+                        mAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(search_recipes.this, "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
-    }
-
-    private ArrayList<Ingredient> convertToIngredientsList(ArrayList<HashMap<String, String>> list) {
-        ArrayList<Ingredient> ingredientArrayList = new ArrayList<>();
-        for (HashMap<String, String> hash : list) {
-            ingredientArrayList.add(new Ingredient(hash.get("name"), hash.get("description"), hash.get("category")));
+            });
         }
-        return ingredientArrayList;
-    }
-*/
+
+        private ArrayList<Ingredient> convertToIngredientsList(ArrayList<HashMap<String, String>> list) {
+            ArrayList<Ingredient> ingredientArrayList = new ArrayList<>();
+            for (HashMap<String, String> hash : list) {
+                ingredientArrayList.add(new Ingredient(hash.get("name"), hash.get("description"), hash.get("category")));
+            }
+            return ingredientArrayList;
+        }
+    */
     @Override
     public void onItemClick(int position) {
         Intent intent = new Intent(search_recipes.this, ShowRecipe.class);
