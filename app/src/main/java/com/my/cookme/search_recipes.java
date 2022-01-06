@@ -45,8 +45,6 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
     private RecyclerView mRecyclerView;
     private ImageAdapter mAdapter;
     private FirebaseStorage mStorage;
-    private ValueEventListener mDBListener;
-    ArrayList<Recipe> l3 = new ArrayList<>(); // list after delete un wanted recipes
 
 
     @Override
@@ -72,107 +70,45 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
         List<String> myRecipes = new ArrayList<>();
 
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
-        ArrayList<String> l= choose_for_recipe.cart_list;
+        ArrayList<String> chosenRecipes= choose_for_recipe.cart_list;
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Recipes");
-        reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                    Toast.makeText(search_recipes.this, "error getting data", Toast.LENGTH_SHORT).show();
-                } else {
-                    HashMap<String, HashMap> o = (HashMap<String, HashMap>) (task.getResult().getValue());
-                    ArrayList<HashMap> l1 = new ArrayList<>(); // list of recipes before convert to recipe object
-                    for (HashMap h : o.values()) {
-                        l1.add(h);
-                    }
-                    //List<Ingredient> ingredients, String description, String preparationMethod, String imageUrl
-                    ArrayList<Recipe> l2 = new ArrayList<>(); // list of recipes after convert
-                    for (int i = 0; i < l1.size(); i++) {
-                        String id = (String) l1.get(i).get("ownerID");
-                        String name = (String) l1.get(i).get("name");
-                        ArrayList<HashMap> ingredients = (ArrayList<HashMap>)l1.get(i).get("ingredients");
-                        ArrayList<Ingredient> ingredients_ = new ArrayList<Ingredient>();
-                        for(int w =0 ;w < ingredients.size();w++){
-                            ingredients_.add(new Ingredient((String)ingredients.get(w).get("name"),(String)ingredients.get(w).get("description"),(String)ingredients.get(w).get("category")));
-                        }
-                        String description = (String) l1.get(i).get("description");
-                        String preparation_method = (String) l1.get(i).get("preparationMethod");
-                        String image_url = (String) l1.get(i).get("imageUrl");
-                        l2.add(new Recipe(id,name,ingredients_,description,preparation_method,image_url));
-                    }
 
-                    boolean isAppropriate;
-                    for( int j=0;j<l2.size();j++) {
-                        ArrayList<String> list_names = new ArrayList<>();
-                        for (int a = 0; a < l2.get(j).getIngredients().size(); a++) {
-                            list_names.add(l2.get(j).getIngredients().get(a).getName());
-                        }
-                        isAppropriate = true;
-                        for(int k=0;k<l.size();k++){
-                            if(!list_names.contains(l.get(k))){
-                                isAppropriate = false;
-                                break;
-                            }
-                        }
-                        if(isAppropriate){
-                            //l3.add(l2.get(j));
-                            mUploads.add(l2.get(j));
-                        }
-                    }
 
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-
-/*
-        mDBListener = usersDBRef.child(user).child("MyRecipes").addValueEventListener(new ValueEventListener() {
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 mUploads.clear();
                 for (DataSnapshot postSnapShot : snapshot.getChildren()) {
-                    String recipeKey = postSnapShot.getValue(String.class);
-                    recipeKeyKey = postSnapShot.getKey();
+                    Recipe recipe = postSnapShot.getValue(Recipe.class);
+                    recipe.setKey(postSnapShot.getKey());
+                    if (filterRecipe(recipe, choose_for_recipe.cart_list))
+                        mUploads.add(recipe);
+                    mAdapter.notifyDataSetChanged();
 
-                    assembleRecipe(recipeKey);
                 }
                 mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(search_recipes.this, "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(search_recipes.this , "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
             }
-
         });
-        */
-    }
-    /*
-        private void assembleRecipe(String recipeKey) {
-            recipesDBRef.child(recipeKey).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Recipe recipe = task.getResult().getValue(Recipe.class);
-                        recipe.setKey(recipeKey);
-                        mUploads.add(recipe);
-                        mAdapter.notifyDataSetChanged();
-                    } else {
-                        Toast.makeText(search_recipes.this, "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
 
-        private ArrayList<Ingredient> convertToIngredientsList(ArrayList<HashMap<String, String>> list) {
-            ArrayList<Ingredient> ingredientArrayList = new ArrayList<>();
-            for (HashMap<String, String> hash : list) {
-                ingredientArrayList.add(new Ingredient(hash.get("name"), hash.get("description"), hash.get("category")));
-            }
-            return ingredientArrayList;
+    }
+
+    private boolean filterRecipe(Recipe recipe, List<String> list) {
+        List<Ingredient> recipeIngredientList = recipe.getIngredients();
+        if (list.size() < recipeIngredientList.size())
+            return false;
+
+        for (int i = 0; i < recipeIngredientList.size(); i++) {
+            if (!list.contains(recipeIngredientList.get(i).getName()))
+                return false;
         }
-    */
+        return true;
+    }
+
     @Override
     public void onItemClick(int position) {
         Intent intent = new Intent(search_recipes.this, ShowRecipe.class);
@@ -182,8 +118,11 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
     }
 
     @Override
-    public void onShowRecipeClick(int position) {
+    public void onLikeRecipeClick(int position) {
         Toast.makeText(this, "show click at  position: " + position, Toast.LENGTH_SHORT).show();
+        Recipe selectedItem = mUploads.get(position);
+        String username = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        selectedItem.addLike(new Like(username, selectedItem.getKey()));
     }
 
     @Override
@@ -207,13 +146,6 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
-        usersDBRef.child(user).child("MyRecipes").removeEventListener(mDBListener);
-    }
-
     private void initializeMenu() {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -230,11 +162,11 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
+        //if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+           // drawerLayout.closeDrawer(GravityCompat.START);
+        //} else {
             super.onBackPressed();
-        }
+        //}
     }
 
     @Override

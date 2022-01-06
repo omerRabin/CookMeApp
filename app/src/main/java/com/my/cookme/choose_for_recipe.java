@@ -97,9 +97,22 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
     ImageButton cart;
     Button countinue_search;
 
+
     ArrayAdapter<CosmicBody> adapter;
     static ArrayList<String> cart_list = new ArrayList<>();
-    String[] categories = {"Cetgories", "Vegtables&Fruits", "Meat", "Dairy Products", "Spices", "Cereals and Legums", "Fish"};
+    String[] categories = {"Categories", "Vegtables&Fruits", "Meat", "Dairy Products", "Spices", "Cereals and Legums", "Fish"};
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_choose_for_recipe);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initializeViews();
+        initializeMenu();
+
+    }
+
     private void initializeViews() {
         mySpinner = findViewById(R.id.mySpinner);
         mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, categories));
@@ -241,15 +254,7 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
 
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_for_recipe);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initializeViews();
-        initializeMenu();
 
-    }
 
     private void initializeMenu() {
         drawerLayout = findViewById(R.id.drawer_layout);

@@ -96,6 +96,7 @@
         android:layout_alignParentBottom="true"
         android:fontFamily="casual"
         android:text="AlertDialog MultiChoice List"
+        android:visibility="invisible"
         android:textAllCaps="true"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
