@@ -80,6 +80,26 @@ public class Recipe implements Serializable {
         });
     }
 
+    @Exclude
+    public void removeLike(String user) {
+        Like like = null;
+        for (int i = 0; i < this.likes.size(); i++) {
+            if (this.likes.get(i).getOwner().equals(user)) {
+                like = this.likes.get(i);
+                this.likes.remove(i);
+            }
+        }
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Recipes").child(like.getRecipeKey()).child("likes");
+        databaseReference.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+
+                databaseReference.setValue(likes);
+                String username = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+            }
+        });
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }

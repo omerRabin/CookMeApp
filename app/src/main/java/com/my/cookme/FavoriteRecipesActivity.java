@@ -79,9 +79,9 @@ public class FavoriteRecipesActivity extends AppCompatActivity
                 mUploads.clear();
                 for (DataSnapshot postSnapShot : snapshot.getChildren()) {
                     Like like = postSnapShot.getValue(Like.class);
-                    recipeKeyKey = like.getRecipeKey();
+                    recipeKeyKey = postSnapShot.getKey();
 
-                    assembleRecipe(recipeKeyKey);
+                    assembleRecipe(like.getRecipeKey());
                 }
                 mAdapter.notifyDataSetChanged();
             }
@@ -127,7 +127,7 @@ public class FavoriteRecipesActivity extends AppCompatActivity
 
     @Override
     public void onLikeRecipeClick(int position) {
-        Toast.makeText(this, "show click at  position: " + position, Toast.LENGTH_SHORT).show();
+
         Recipe selectedItem = mUploads.get(position);
         String username = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         selectedItem.addLike(new Like(username, selectedItem.getKey()));
@@ -136,23 +136,23 @@ public class FavoriteRecipesActivity extends AppCompatActivity
 
     @Override
     public void onDeleteClick(int position) {
+
+
         if (this.recipeKeyKey == null) {
             Toast.makeText(this, "We are sorry something went wrong", Toast.LENGTH_SHORT).show();
             return;
         }
+
         Recipe selectedItem = mUploads.get(position);
         String selectedKey = selectedItem.getKey();
 
-        StorageReference imageRef = mStorage.getReferenceFromUrl(selectedItem.getImageUrl());
-        imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                recipesDBRef.child(selectedKey).removeValue();
-                String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
-                usersDBRef.child(user).child("MyRecipes").child(recipeKeyKey).removeValue();
-                Toast.makeText(FavoriteRecipesActivity.this, "Item deleted", Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        String user = MainActivity.getUser();
+        usersDBRef.child(user).child("likedRecipes").child(recipeKeyKey).removeValue();
+        //selectedItem.removeLike(MainActivity.getEmail());
+        Toast.makeText(FavoriteRecipesActivity.this, "Item has been removed from your favorites", Toast.LENGTH_SHORT).show();
+
+
     }
 
     @Override
@@ -179,16 +179,16 @@ public class FavoriteRecipesActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         //if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            //drawerLayout.closeDrawer(GravityCompat.START);
+        //drawerLayout.closeDrawer(GravityCompat.START);
         //} else {
-            super.onBackPressed();
+        super.onBackPressed();
         //}
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.nav_home:
                 Intent intent0 = new Intent(FavoriteRecipesActivity.this, DashboardActivity.class);
                 startActivity(intent0);

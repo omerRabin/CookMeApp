@@ -134,36 +134,14 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
         this.buttonInsertData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 insertRecipeData();
+                Intent intent2 = new Intent(UploadRecipeActivity.this, DashboardActivity.class);
+                startActivity(intent2);
+                finish();
             }
         });
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0]; // gets the current username
-        // Try to do what yoel tried
-        //######################################################################################################################
-        /*adminsDbRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() { // gets all the admins for the db
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                //counter=0;
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                } else {
-
-                    ArrayList<String> admins = (ArrayList<String>) task.getResult().getValue();
-                    boolean flag = true;
-                    for (int i = 1; i < admins.size(); i++) {
-                        //Toast.makeText(UploadRecipeActivity.this, "a", Toast.LENGTH_LONG).show();
-                        if (user.equals(admins.get(i))) {
-                            flag = false; // if the user is an admin
-                        }
-                    }
-                    if (flag) { // if the user is not an admin
-                        buttonAddIngredient.setVisibility(View.GONE);
-                    }
-                }
-            }
-        });*/
-        //######################################################################################################33
-
 
         this.buttonChooseImage.setOnClickListener(v -> mgetContent.launch("image/*"));
     }
@@ -207,6 +185,8 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
         this.imageView = findViewById(R.id.imageView);
         this.layoutList = findViewById(R.id.layout_list);
         this.buttonAdd = findViewById(R.id.button_add);
+        if (MainActivity.isAdmin())
+            this.buttonAddIngredient.setVisibility(View.VISIBLE);
     }
 
 
@@ -305,6 +285,7 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
         recipeDBRef.child(uniqueKey).setValue(recipe);
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
         usersDBRef.child(user).child("MyRecipes").push().setValue(uniqueKey);
+        Toast.makeText(UploadRecipeActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
     }
 
     private void pushMissingIngredients(List<String> list) {
@@ -336,10 +317,12 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
             case R.id.nav_home:
                 Intent intent0 = new Intent(UploadRecipeActivity.this, DashboardActivity.class);
                 startActivity(intent0);
+                //finish();
                 break;
             case R.id.nav_cookme:
                 Intent intent = new Intent(UploadRecipeActivity.this, choose_for_recipe.class);
                 startActivity(intent);
+                //finish();
                 break;
             case R.id.nav_upload_recipe:
                 break;
@@ -347,10 +330,12 @@ public class UploadRecipeActivity extends AppCompatActivity implements Navigatio
             case R.id.nav_logout:
                 Intent intent2 = new Intent(UploadRecipeActivity.this, MainActivity.class);
                 startActivity(intent2);
+                //finish();
                 break;
             case R.id.nav_profile:
                 Intent intent3 = new Intent(UploadRecipeActivity.this, PersonalAreaActivity.class);
                 startActivity(intent3);
+                //finish();
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);

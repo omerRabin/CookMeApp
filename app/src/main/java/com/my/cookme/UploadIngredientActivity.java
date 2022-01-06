@@ -44,7 +44,6 @@ public class UploadIngredientActivity extends AppCompatActivity
     private AutoCompleteTextView editTextName;
     private EditText editTextCategory;
     private Button buttonAdd;
-    private Button buttonDelete;
     private RecyclerView recyclerView;
 
     private DatabaseReference updateDBRef;
@@ -77,12 +76,6 @@ public class UploadIngredientActivity extends AppCompatActivity
             }
         });
 
-        this.buttonDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //deleteUpdates();
-            }
-        });
 
 
         showNeededUpdates();
@@ -114,7 +107,6 @@ public class UploadIngredientActivity extends AppCompatActivity
         this.editTextName = findViewById(R.id.editTextIngredientName);
         this.editTextCategory = findViewById(R.id.editTextCategory);
         this.buttonAdd = findViewById(R.id.ButtonAddIngredient);
-        this.buttonDelete = findViewById(R.id.buttondelete);
     }
 
 

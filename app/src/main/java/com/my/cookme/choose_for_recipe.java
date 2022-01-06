@@ -257,7 +257,6 @@ public class choose_for_recipe extends AppCompatActivity
                     if (allIngredients.get(i).second.equals(this.autoCompleteTextView.getText().toString())) {
                         cart_list_ingredients.add(allIngredients.get(i));
                         cart_list.add(allIngredients.get(i).second);
-                        Toast.makeText(this, allIngredients.get(i).second, Toast.LENGTH_SHORT).show();
                     }
                     if (firstTime) {
                         setAdapter(rAdapter);

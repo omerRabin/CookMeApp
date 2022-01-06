@@ -67,9 +67,8 @@
                 android:id="@+id/buttonInsertData"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:text="Insert Data"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/button_choose_image" />
 
@@ -147,9 +146,12 @@
                 android:id="@+id/buttonGoAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add Ingrediente"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/buttonInsertData" />
+                android:layout_marginTop="10dp"
+                android:text="Add Ingredient"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_choose_image" />
+
 
             <Button
                 android:id="@+id/button_choose_image"

@@ -1,4 +1,5 @@
 package com.my.cookme;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,7 +71,7 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
         List<String> myRecipes = new ArrayList<>();
 
         String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
-        ArrayList<String> chosenRecipes= choose_for_recipe.cart_list;
+        ArrayList<String> chosenRecipes = choose_for_recipe.cart_list;
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Recipes");
 
 
@@ -81,8 +82,10 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
                 for (DataSnapshot postSnapShot : snapshot.getChildren()) {
                     Recipe recipe = postSnapShot.getValue(Recipe.class);
                     recipe.setKey(postSnapShot.getKey());
-                    if (filterRecipe(recipe, choose_for_recipe.cart_list))
+                    if (filterRecipe(recipe, choose_for_recipe.cart_list)) {
                         mUploads.add(recipe);
+
+                    }
                     mAdapter.notifyDataSetChanged();
 
                 }
@@ -91,7 +94,7 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(search_recipes.this , "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(search_recipes.this, "We are sorry, something went wrong!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -119,7 +122,6 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
 
     @Override
     public void onLikeRecipeClick(int position) {
-        Toast.makeText(this, "show click at  position: " + position, Toast.LENGTH_SHORT).show();
         Recipe selectedItem = mUploads.get(position);
         String username = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         selectedItem.addLike(new Like(username, selectedItem.getKey()));
@@ -127,23 +129,35 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
 
     @Override
     public void onDeleteClick(int position) {
-        if (this.recipeKeyKey == null) {
-            Toast.makeText(this, "We are sorry something went wrong", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
         Recipe selectedItem = mUploads.get(position);
         String selectedKey = selectedItem.getKey();
+
+        if (MainActivity.isAdmin() == false && MainActivity.getEmail().equals(selectedItem.getOwnerID()) == false) {
+            Toast.makeText(search_recipes.this, "You are not the admin or the recipe owner", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Toast.makeText(search_recipes.this, "Unkown error", Toast.LENGTH_SHORT).show();
+
+        /*getRecipeKeyKey(selectedItem.getKey(), selectedItem.getOwnerID());
+
+        while (recipeKeyKey == null) {
+
+        }
+
+
 
         StorageReference imageRef = mStorage.getReferenceFromUrl(selectedItem.getImageUrl());
         imageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 recipesDBRef.child(selectedKey).removeValue();
-                String user = FirebaseAuth.getInstance().getCurrentUser().getEmail().split("@")[0];
+                String user = selectedItem.getOwnerID().split("@")[0];
                 usersDBRef.child(user).child("MyRecipes").child(recipeKeyKey).removeValue();
                 Toast.makeText(search_recipes.this, "Item deleted", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 
     private void initializeMenu() {
@@ -163,16 +177,16 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
     @Override
     public void onBackPressed() {
         //if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-           // drawerLayout.closeDrawer(GravityCompat.START);
+        // drawerLayout.closeDrawer(GravityCompat.START);
         //} else {
-            super.onBackPressed();
+        super.onBackPressed();
         //}
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.nav_home:
                 Intent intent0 = new Intent(search_recipes.this, DashboardActivity.class);
                 startActivity(intent0);
@@ -197,5 +211,21 @@ public class search_recipes extends AppCompatActivity implements ImageAdapter.On
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void getRecipeKeyKey(String recipeKey, String owner) {
+        int x =1;
+        usersDBRef.child(owner.split("@")[0]).child("MyRecipes").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (!task.isSuccessful())
+                    Toast.makeText(search_recipes.this, "oops, something went wrong", Toast.LENGTH_SHORT).show();
+                else {
+                    Object o = task.getResult().getValue();
+                }
+            }
+        });
+
+
     }
 }

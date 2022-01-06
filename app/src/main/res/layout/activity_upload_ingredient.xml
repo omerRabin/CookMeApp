@@ -85,17 +85,6 @@
                 app:layout_constraintStart_toStartOf="@+id/editTextCategory"
                 app:layout_constraintTop_toBottomOf="@+id/editTextCategory" />
 
-            <Button
-                android:id="@+id/buttondelete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-
-                android:text="I have updated the database"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recycler_view_ingredients" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_ingredients"
                 android:layout_width="wrap_content"

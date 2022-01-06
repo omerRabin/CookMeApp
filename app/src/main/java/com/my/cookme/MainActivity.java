@@ -55,6 +55,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public static boolean isAdmin() {
+        String user = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        return user.equals("yoel2810@gmail.com") || user.equals("omerrabin1289@gmail.com")
+                || user.equals("amittzumi@hotmail.com");
+    }
+
+    public static String getEmail () {
+        return FirebaseAuth.getInstance().getCurrentUser().getEmail();
+    }
+
+    public static String getUser() {
+        return getEmail().split("@")[0];
+    }
+
 
     private void Login() {
         String email = emailEt.getText().toString();

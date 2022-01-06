@@ -127,7 +127,6 @@ public class MyRecipesActivity extends AppCompatActivity
 
     @Override
     public void onLikeRecipeClick(int position) {
-        Toast.makeText(this, "show click at  position: " + position, Toast.LENGTH_SHORT).show();
         Recipe selectedItem = mUploads.get(position);
         String username = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         selectedItem.addLike(new Like(username, selectedItem.getKey()));

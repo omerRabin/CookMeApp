@@ -133,7 +133,7 @@ public class PersonalAreaActivity extends AppCompatActivity implements Navigatio
                     sb.append(_data.toString()+"\n");
                     sensitivities_list.add(_data.toString());
                 }
-                Toast.makeText(PersonalAreaActivity.this,sb.toString(),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(PersonalAreaActivity.this,sb.toString(),Toast.LENGTH_SHORT).show();
                 for(int i=0;i<sensitivities_list.size();i++) {
                     sensitivities.push().setValue(sensitivities_list.get(i));
                 }
