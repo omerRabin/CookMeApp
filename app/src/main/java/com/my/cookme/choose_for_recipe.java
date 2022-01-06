@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +43,7 @@ import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -60,6 +62,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
@@ -83,24 +86,32 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.my.cookme.Adapters.IngredientsAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class choose_for_recipe extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class choose_for_recipe extends AppCompatActivity
+        implements IngredientsAdapter.OnIngredientClickListener,
+        NavigationView.OnNavigationItemSelectedListener {
+
+    private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private Toolbar toolbar;
-    ArrayList<CosmicBody> data = new ArrayList<>();
-    ListView myListView;
-    Spinner mySpinner;
-    ImageButton cart;
-    Button countinue_search;
+    private IngredientsAdapter rAdapter;
+    private RecyclerView recyclerView;
+    private AutoCompleteTextView autoCompleteTextView;
+    private boolean firstTime;
+    private DatabaseReference ingredientsDBRef;
+    private Button buttonAdd;
+    private Button buttonSearch;
 
+    private HashMap<String, CheckBox> checkBoxes;
 
-    ArrayAdapter<CosmicBody> adapter;
     static ArrayList<String> cart_list = new ArrayList<>();
-    String[] categories = {"Categories", "Vegtables&Fruits", "Meat", "Dairy Products", "Spices", "Cereals and Legums", "Fish"};
+    private ArrayList<Pair<String, String>> cart_list_ingredients;
+    private ArrayList<Pair<String, String>> allIngredients;
+    private ArrayAdapter<String> adapter;
 
 
     @Override
@@ -108,153 +119,157 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_for_recipe);
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initializeViews();
+        this.firstTime = true;
+        this.cart_list_ingredients = new ArrayList<>();
+        this.adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+        this.allIngredients = new ArrayList<>();
+
+
+
+        initializeXmlElements();
         initializeMenu();
 
-    }
+        rAdapter = new IngredientsAdapter(choose_for_recipe.this);
+        rAdapter.setOnIngredientClickListener(this);
 
-    private void initializeViews() {
-        mySpinner = findViewById(R.id.mySpinner);
-        mySpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, categories));
-        myListView = findViewById(R.id.myListView);
-        this.cart = (ImageButton) findViewById(R.id.cart);
-        ArrayAdapter<CosmicBody> a = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_multiple_choice, getCosmicBodies());
-        myListView.setAdapter(a);
-        this.myListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        data.clear();
-
-        mySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        this.buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onClick(View view) {
+                checkAutoComplete();
+            }
+        });
 
-                if (position > 0 && position < categories.length) { // here i will create and insert into a list of ingredients
-                    //Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
-                    getSelectedCategoryData(position);
-                  //  Toast.makeText(choose_for_recipe.this, "selected category exist!", Toast.LENGTH_SHORT).show();
-                } else {
-                    //Toast.makeText(choose_for_recipe.this, "selected category doesnt exist!", Toast.LENGTH_SHORT).show();
+        this.ingredientsDBRef = FirebaseDatabase.getInstance().getReference().child("Ingredients");
+
+
+        autoCompleteTextView.setAdapter(adapter);
+
+
+
+
+        ingredientsDBRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                allIngredients.clear();
+                adapter.clear();
+                Toast.makeText(choose_for_recipe.this, "UPDATED", Toast.LENGTH_SHORT).show();
+                for (DataSnapshot postSnapShot : snapshot.getChildren()) {
+                    String ingredientValue = postSnapShot.getValue(Ingredient.class).getName();
+                    String ingredientKey = postSnapShot.getKey();
+                    Pair<String, String> pair = new Pair<>(ingredientKey, ingredientValue);
+                    Ingredient ingredient = postSnapShot.getValue(Ingredient.class);
+                    allIngredients.add(new Pair<>(ingredientKey, ingredientValue));
+                    adapter.add(ingredient.getName());
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        this.myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CheckedTextView v = (CheckedTextView) view;
-                boolean currentCheck = v.isChecked();
-                CosmicBody x = (CosmicBody) parent.getItemAtPosition(position);
-                x.setActive(!currentCheck);
-                if(cart_list.contains(x.getName())){
-                    cart_list.remove(x.getName());
-                }
-                else{
-                    cart_list.add(x.getName());
-                }
-
-            }
-        });
-        //
-
-        cart.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(choose_for_recipe.this);
-                builder.setCancelable(true);
-                String pop_up_content = "Selected Ingredients :" + String.join(", ", choose_for_recipe.cart_list);
-                builder.setTitle("Your Cart");
-                builder.setMessage(pop_up_content);
-                builder.setNegativeButton("exit", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                builder.show();
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(choose_for_recipe.this, "We are sorry, something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
 
 
-        this.initListViewData();
-        countinue_search=findViewById(R.id.btn_continue_search);
-        this.countinue_search.setOnClickListener(new View.OnClickListener() {
+        this.buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 Intent intent = new Intent(choose_for_recipe.this, search_recipes.class);
                 startActivity(intent);
             }
         });
+
     }
 
-    private void initListViewData()  {
+    public void onCheckboxClicked(View view) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) view).isChecked();
 
-        //ArrayAdapter<CosmicBody> arrayAdapter
-        //      = new ArrayAdapter<CosmicBody>(this, android.R.layout.simple_list_item_checked , getCosmicBodies());
-
-        for(int i=0;i< data.size(); i++ )  {
-            this.myListView.setItemChecked(i,data.get(i).isActive());
+        // Check which checkbox was clicked
+        switch(view.getId()) {
+            case R.id.checkBoxVegetables:
+                Toast.makeText(this, "veg", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.checkBoxMeat:
+                Toast.makeText(this, "meat", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.checkBoxDairy:
+                Toast.makeText(this, "dairy", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.checkBoxSpices:
+                Toast.makeText(this, "spices", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.checkBoxCereals:
+                Toast.makeText(this, "cereals", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.checkBoxFish:
+                Toast.makeText(this, "fish", Toast.LENGTH_SHORT).show();
+                break;
         }
-
     }
 
-    private ArrayList<CosmicBody> getCosmicBodies() {
-        Log.d("TAG", "Before attaching the listener!");
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Ingredients");
-        reference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+
+
+    private void initializeXmlElements() {
+        this.drawerLayout = findViewById(R.id.drawer_layout);
+        this.navigationView = findViewById(R.id.nav_view);
+        this.recyclerView = findViewById(R.id.recycler_view_ingredients);
+        this.autoCompleteTextView = findViewById(R.id.autoComplete);
+        this.buttonAdd = findViewById(R.id.buttonAdd);
+        this.buttonSearch = findViewById(R.id.buttonSearch);
+        checkBoxes = new HashMap<>();
+        checkBoxes.put("Vegtables&Fruits", findViewById(R.id.checkBoxVegetables));
+        checkBoxes.put("Meat", findViewById(R.id.checkBoxMeat));
+        checkBoxes.put("Dairy Products", findViewById(R.id.checkBoxDairy));
+        checkBoxes.put("Spices", findViewById(R.id.checkBoxSpices));
+        checkBoxes.put("Cereals and Legums", findViewById(R.id.checkBoxCereals));
+        checkBoxes.put("Fish", findViewById(R.id.checkBoxFish));
+        setAutoComplete();
+    }
+
+    private void setAutoComplete() {
+
+        this.autoCompleteTextView.setAdapter(adapter);
+
+
+        autoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                } else {
-                    Log.d("firebase", String.valueOf(task.getResult().getValue()));
-                    HashMap<String, Object> o = (HashMap<String, Object>) (task.getResult().getValue());
-                    ArrayList<Object> l1 = new ArrayList<>();
-                    for (Object obj : o.values()) { l1.add(obj); }
-                    ArrayList<HashMap<String, String>> l1_convert = new ArrayList<>();
-                    for (Object x : l1) {
-                        l1_convert.add((HashMap<String, String>) x); }
-                    for (int i = 0; i < l1_convert.size(); i++) {
-                        String name = l1_convert.get(i).get("name");
-                        String category = l1_convert.get(i).get("category");
-                        boolean flag = true;
-                        for(int j=0;j<data.size();j++){
-                            if(data.get(j).getName().equals(name)){
-                                flag= false;
-                                break; }
-                        }
-                        if (flag) {
-                            data.add(new CosmicBody(name, category, false)); }
-                    }
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    checkAutoComplete();
                 }
             }
         });
-        return data;
-    }
-    private void getSelectedCategoryData(int categoryID) {
-        ArrayList<CosmicBody> cosmicBodies = new ArrayList<>();
-        cosmicBodies.clear();
 
-        if (categoryID == 0) {
-            adapter = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_checked, getCosmicBodies());
+
+    }
+
+    private void checkAutoComplete() {
+        if (adapter.getCount() < 1) {
+            autoCompleteTextView.setError("No such ingredient");
+            autoCompleteTextView.setText("");
         } else {
-
-            for (CosmicBody cosmicBody : getCosmicBodies()) {
-                if (cosmicBody.getCategoryID() == categoryID) {
-                    cosmicBodies.add(cosmicBody);
-                }
+            if (((String) adapter.getItem(0)).equals(autoCompleteTextView.getText().toString()) == false) {
+                autoCompleteTextView.setError("No such ingredient");
+                autoCompleteTextView.setText("");
             }
-
-            adapter = new ArrayAdapter<>(choose_for_recipe.this, android.R.layout.simple_list_item_checked, cosmicBodies);
+            else {
+                for (int i = 0; i < allIngredients.size(); i++) {
+                    if (allIngredients.get(i).second.equals(this.autoCompleteTextView.getText().toString())) {
+                        cart_list_ingredients.add(allIngredients.get(i));
+                        cart_list.add(allIngredients.get(i).second);
+                        Toast.makeText(this, allIngredients.get(i).second, Toast.LENGTH_SHORT).show();
+                    }
+                    if (firstTime) {
+                        setAdapter(rAdapter);
+                        firstTime = false;
+                    }
+                    else
+                        rAdapter.setIngredients(allIngredients);
+                }
+                rAdapter.setIngredients(cart_list_ingredients);
+            }
         }
-        myListView.setAdapter(adapter);
-
     }
-
-
 
     private void initializeMenu() {
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -310,4 +325,18 @@ public class choose_for_recipe extends AppCompatActivity implements NavigationVi
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void setAdapter(IngredientsAdapter rAdapter) {
+        rAdapter.setIngredients(this.cart_list_ingredients);
+        recyclerView.setAdapter(rAdapter);
+        recyclerView.setLayoutManager(new FlexboxLayoutManager(this));
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        cart_list.remove(position);
+        cart_list_ingredients.remove(position);
+        setAdapter(rAdapter);
+    }
+
 }

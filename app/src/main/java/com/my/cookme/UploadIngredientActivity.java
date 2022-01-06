@@ -150,7 +150,6 @@ public class UploadIngredientActivity extends AppCompatActivity
                     Pair<String, String> pair = new Pair<>(ingredientKey, ingredientValue);
                     addIngredientsList.add(pair);
                     adapter.add(pair.second);
-                    //rAdapter.notifyDataSetChanged();
                 }
                 if (firstTime)
                     setAdapter(rAdapter);

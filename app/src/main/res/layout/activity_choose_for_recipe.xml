@@ -7,10 +7,10 @@
     android:layout_height="match_parent"
     android:background="@drawable/ingredients"
     android:fitsSystemWindows="true"
-    tools:openDrawer="start"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".choose_for_recipe">
+    tools:context=".choose_for_recipe"
+    tools:openDrawer="start">
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -31,68 +31,161 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/choose_ingredients"
+        <!--        <TextView-->
+        <!--            android:id="@+id/choose_ingredients"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:text="@string/choose_ingredients"-->
+        <!--            android:textColor="@color/black"-->
+        <!--            android:textSize="20sp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            app:layout_constraintVertical_bias="0.022" />-->
+
+        <AutoCompleteTextView
+            android:id="@+id/autoComplete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/choose_ingredients"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/rectangular_field"
+            android:completionThreshold="1"
+            android:hint="Search Bar"
+            android:inputType="textMultiLine"
+            android:paddingVertical="15dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textColor="#000000"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.022" />
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-        <Spinner
-            android:id="@+id/mySpinner"
-            android:layout_width="409dp"
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_ingredients"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkBoxMeat">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <CheckBox
+            android:id="@+id/checkBoxVegetables"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:checked="true"
             android:minHeight="48dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/choose_ingredients"
-            app:layout_constraintVertical_bias="0.108" />
+            android:onClick="onCheckboxClicked"
+            android:text="Vegetables and Fruits"
+            android:textColor="#B71C1C"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@+id/checkBoxCereals"
+            app:layout_constraintTop_toBottomOf="@+id/checkBoxCereals" />
 
-        <ListView
-            android:id="@+id/myListView"
-            android:layout_width="179dp"
-            android:layout_height="361dp"
-            android:layout_below="@+id/mySpinner"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.534"
+        <CheckBox
+            android:id="@+id/checkBoxMeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:checked="true"
+            android:minHeight="48dp"
+            android:onClick="onCheckboxClicked"
+            android:text="Meat"
+            android:textColor="#B71C1C"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mySpinner"
-            app:layout_constraintVertical_bias="0.152" />
+            app:layout_constraintTop_toBottomOf="@+id/checkBoxSpices" />
 
-        <ImageButton
-            android:id="@+id/cart"
-            android:layout_width="113dp"
-            android:layout_height="113dp"
-            android:scrollbarDefaultDelayBeforeFade="1"
-            android:scrollbarFadeDuration="3"
-            android:scrollbarSize="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.947"
+        <CheckBox
+            android:id="@+id/checkBoxDairy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:checked="true"
+            android:minHeight="48dp"
+            android:onClick="onCheckboxClicked"
+            android:text="Dairy Products"
+            android:textColor="#B71C1C"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@+id/checkBoxFish"
+            app:layout_constraintTop_toBottomOf="@+id/checkBoxFish" />
+
+        <CheckBox
+            android:id="@+id/checkBoxSpices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:checked="true"
+            android:minHeight="48dp"
+            android:onClick="onCheckboxClicked"
+            android:text="Spices"
+            android:textColor="#B71C1C"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@+id/checkBoxDairy"
+            app:layout_constraintTop_toBottomOf="@+id/checkBoxDairy" />
+
+        <CheckBox
+            android:id="@+id/checkBoxCereals"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:checked="true"
+            android:minHeight="48dp"
+            android:onClick="onCheckboxClicked"
+            android:text="Cereals and Legumes"
+            android:textColor="#B71C1C"
+            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.974"
-            app:srcCompat="@drawable/cart" />
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+        <CheckBox
+            android:id="@+id/checkBoxFish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:checked="true"
+            android:minHeight="48dp"
+            android:onClick="onCheckboxClicked"
+            android:text="Fish"
+            android:textColor="#B71C1C"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@+id/checkBoxVegetables"
+            app:layout_constraintTop_toBottomOf="@+id/checkBoxVegetables" />
 
         <Button
-            android:id="@+id/btn_continue_search"
+            android:id="@+id/buttonSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="press to continue"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="50dp"
+            android:text="Search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.072"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.939" />
+            app:layout_constraintTop_toBottomOf="@+id/recycler_view_ingredients" />
+
+        <Button
+            android:id="@+id/buttonAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            app:layout_constraintStart_toEndOf="@+id/autoComplete"
+            app:layout_constraintTop_toTopOf="@+id/autoComplete" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="75dp"
+            android:text="TextView"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@+id/checkBoxVegetables"
+            app:layout_constraintTop_toBottomOf="@+id/autoComplete" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
